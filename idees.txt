@@ -1,0 +1,11 @@
+Accueil ->
+    - Champ de texte --> Film *
+    - Filtrer par categorie de film (selectbox)
+    - Filtrer par année 
+    - Filtrer par Pays
+
+
+    Avoir un seul champ de texte pour pouvoir filtrer les films
+
+
+    On pourrait rechercher des films par le nom, ou une personne qui est liée à un film
