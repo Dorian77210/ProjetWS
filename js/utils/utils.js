@@ -21,12 +21,24 @@ class QueryBuilder
         for (const param of params)
         {
             this.selectBody += (param !== "*")
-                ? `?${param}`
+                ? `?${param} `
                 : "*";
 
-
-            return this;
         }
+
+        return this;
+    }
+
+    /**
+     * Permet de sélectionner des attributs dans un requête avec une contrainte DISTINCT. 
+     * Exemple : queryBuilder.select("nom", "prenom")
+     * @param {Array} params Les paramètres à sélectionner 
+     * @return L'objet courant
+     */
+    selectDistinct(...params)
+    {
+        this.selectBody = "DISTINCT ";
+        return this.select(...params);
     }
 
     /**
@@ -53,7 +65,8 @@ class QueryBuilder
 
     filter(f)
     {
-        this.filterBody += f + "\n";
+        this.filterBody += "FILTER " + f + "\n";
+        return this;
     }
 
     /**
@@ -70,11 +83,7 @@ class QueryBuilder
 
     __toString()
     {
-        var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} `;
-        if (this.filterBody !== "")
-        {
-            res = `${res} FILTER ${this.filterBody}`;
-        }
+        var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.filterBody} `;
         res += "}";
         
         return res;

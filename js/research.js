@@ -1,8 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const $content = document.getElementById("content");
+    const $spinner = document.getElementById("spinner");
+
+
     const searchByText = document.getElementById("search-by-text");
     searchByText.addEventListener("click", async event => {
-        const text = document.getElementById("filter-by-text").value;
+        const text = document.getElementById("filter-by-text").value.trim();
 
+        if (text === "") return;
         const byFilm = new QueryBuilder();
 
         var matchingResults = {};
@@ -11,10 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
         byFilm.addPrefix("dbr", "<http://dbpedia.org/resource/>")
             .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
             .addPrefix("dbp", "<http://dbpedia.org/property/>")
-            .select("film")
+            .selectDistinct("name", "wikiID")
             .where("?film a dbo:Film;")
-            .andWhere("dbp:name ?name")
-            .filter(`regex(lcase(str(?name)) ,lcase(".*${text}.*"))`);
+            .andWhere("dbp:name ?name;")
+            .andWhere("dbo:wikiPageID ?wikiID")
+            .filter(`regex(lcase(str(?name)) ,lcase(".*${text}.*"))`)
+            .filter(`langMatches(lang(?name), "en")`);
+        console.log(byFilm.__toString());
 
         const byActor = new QueryBuilder();
 
@@ -22,10 +30,13 @@ document.addEventListener("DOMContentLoaded", () => {
         byActor.addPrefix("dbr", "<http://dbpedia.org/resource/>")
             .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
             .addPrefix("dbp", "<http://dbpedia.org/property/>")
-            .select("film")
+            .selectDistinct("name", "wikiID")
             .where("?film a dbo:Film;")
-            .andWhere("dbp:starring ?actors")
-            .filter(`regex(lcase(str(?actors)) ,lcase(".*${text}.*"))`);
+            .andWhere("dbp:starring ?actors;")
+            .andWhere("dbp:name ?name;")
+            .andWhere("dbo:wikiPageID ?wikiID")
+            .filter(`regex(lcase(str(?actors)) ,lcase(".*${text}.*"))`)
+            .filter(`langMatches(lang(?name), "en")`);
 
         const byDirector = new QueryBuilder();
 
@@ -33,13 +44,18 @@ document.addEventListener("DOMContentLoaded", () => {
         byDirector.addPrefix("dbr", "<http://dbpedia.org/resource/>")
             .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
             .addPrefix("dbp", "<http://dbpedia.org/property/>")
-            .select("film")
+            .selectDistinct("name", "wikiID")
             .where("?film a dbo:Film;")
-            .andWhere("dbo:director ?director")
-            .filter(`regex(lcase(str(?director)) ,lcase(".*${text}.*"))`);
+            .andWhere("dbo:director ?director;")
+            .andWhere("dbp:name ?name;")
+            .andWhere("dbo:wikiPageID ?wikiID")
+            .filter(`regex(lcase(str(?director)) ,lcase(".*${text}.*"))`)
+            .filter(`langMatches(lang(?name), "en")`);
 
         try
         {
+            $content.innerHTML = "";
+            $spinner.style.display = "block";
             var result = await byFilm.request();
             matchingResults.byFilm = result.data.results.bindings;
             
@@ -49,7 +65,11 @@ document.addEventListener("DOMContentLoaded", () => {
             result = await byDirector.request();
             matchingResults.byDirector = result.data.results.bindings;
 
-            console.log(matchingResults);
+            $spinner.style.display = "none";
+            $content.appendChild(createFilmContainer(`Films contenant "${text}"`, matchingResults.byFilm));
+            $content.appendChild(createFilmContainer(`Films dont le nom d'un acteur contient "${text}"`, matchingResults.byActor));
+            $content.appendChild(createFilmContainer(`Films dont le nom du directeur contient "${text}"`, matchingResults.byDirector));
+            
         } catch(err)
         {
             console.log(err);
@@ -57,3 +77,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 });
+
+const toggleDiv = div => {
+    if (div.classList.contains("close"))
+    {
+        div.classList.remove("close");
+        div.classList.add("open");
+    }
+    else
+    {
+        div.classList.remove("open");
+        div.classList.add("close");
+    }
+}
+
+const createFilmContainer = (title, films) => {
+    // on affiche les films
+    var $filmContent = document.createElement("div");
+
+    var $title = document.createElement("h3");
+
+    $title.classList.add("main-title");
+    $title.textContent = `${title}`;
+
+    $filmContent.appendChild($title);
+
+    var $filmContainer = document.createElement("div");
+    $filmContainer.classList.add("filmContainer");
+    $filmContainer.classList.add("open");
+
+    $title.onclick = () => toggleDiv($filmContainer);
+
+    films.forEach(film => {
+        const $film = document.createElement("div");
+        $film.classList.add("film");
+        var $filmName = document.createElement("h5");
+        $filmName.textContent = film.name.value;
+
+        $film.appendChild($filmName);
+        $filmContainer.appendChild($film);
+    });
+
+    $filmContent.appendChild($filmContainer);
+
+    return $filmContent;
+}

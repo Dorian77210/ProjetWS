@@ -1,0 +1,47 @@
+#spinner
+{
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+
+.filmContainer
+{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.film
+{
+    width: 33%;
+}
+
+.main-title:hover
+{
+    cursor: pointer;
+}
+
+.open
+{
+    -webkit-transition: max-height 1s ease;
+    -moz-transition: max-height 1s ease;
+      -o-transition: max-height 1s ease;
+     -ms-transition: max-height 1s ease;
+         transition: max-height 1s ease;
+    overflow: hidden;
+    overflow-y: scroll;
+
+    max-height: 500px;
+}
+
+.close
+{
+    -webkit-transition: max-height 1s ease;
+    -moz-transition: max-height 1s ease;
+      -o-transition: max-height 1s ease;
+     -ms-transition: max-height 1s ease;
+         transition: max-height 1s ease;
+    overflow: hidden;
+    max-height: 0px;
+}
