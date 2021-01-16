@@ -22,8 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .andWhere("dbo:wikiPageID ?wikiID")
             .filter(`regex(lcase(str(?name)) ,lcase(".*${text}.*"))`)
             .filter(`langMatches(lang(?name), "en")`);
-        console.log(byFilm.__toString());
-
+        
         const byActor = new QueryBuilder();
 
         // films par le nom des acteurs
@@ -107,14 +106,34 @@ const createFilmContainer = (title, films) => {
     $filmContainer.classList.add("open");
 
     $title.onclick = () => toggleDiv($filmContainer);
-
-    films.forEach(film => {
+    
+    const screenWidth = window.screen.width;
+    films.forEach(async film => {
         const $film = document.createElement("div");
         $film.classList.add("film");
+
+        const $img = document.createElement("img");
+
         var $filmName = document.createElement("h5");
         $filmName.textContent = film.name.value;
 
+        console.log(film);
+
+        var imageURL = await getImageURL(film.wikiID.value);
+        if (imageURL === "")
+        {
+            imageURL = "./../img/no-image-available.png";
+        }
+
+        $img.setAttribute("src", imageURL);
+        $img.classList.add("film-img");
+        $img.style.width = `${(screenWidth / 4) - 20}px`;
+
         $film.appendChild($filmName);
+        $film.appendChild($img);
+
+        console.log($img);
+
         $filmContainer.appendChild($film);
     });
 

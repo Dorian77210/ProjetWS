@@ -14,7 +14,7 @@
 
 .film
 {
-    width: 33%;
+    width: 25%;
 }
 
 .main-title:hover
@@ -44,4 +44,9 @@
          transition: max-height 1s ease;
     overflow: hidden;
     max-height: 0px;
+}
+
+.film-img
+{
+    height: auto;
 }

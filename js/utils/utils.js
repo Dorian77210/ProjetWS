@@ -95,4 +95,29 @@ class QueryBuilder
         const url = DBPEDIA_URL + "?query=" + encodeURIComponent(query) +"&format=json";
         return axios.get(url);
     }
+};
+
+
+/**
+ * Permet de récupérer une image par l'id Wiki
+ * @param {*} wikiID L'id Wiki
+ */
+const getImageURL = async wikiID => 
+{
+    var url = `https://en.wikipedia.org/w/api.php?origin=*&action=query&pageids=${wikiID}&prop=pageprops&format=json`;
+    var result = await axios.get(url);
+
+    const pageImage = result.data.query.pages[wikiID].pageprops.page_image;
+
+    url = `https://en.wikipedia.org/w/api.php?origin=*&action=query&titles=Image:${pageImage}&prop=imageinfo&iiprop=url&format=json`;
+    var result = await axios.get(url);
+    const pages = result.data.query.pages;
+    const key = Object.keys(pages)[0];
+
+    const imageURL = (!pages[key].imageinfo)
+                   ? ""
+                   : pages[key].imageinfo[0].url;
+
+                   
+    return imageURL;
 }
