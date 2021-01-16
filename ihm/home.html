@@ -1,29 +1,26 @@
 <html>
     <head>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="./../js/research.js"></script>
+        <script src="./../js/utils/utils.js"></script>
         <meta charset="utf-8">
     </head>
-    <body>
 
+    <header>
+        <label>
+            <input name="filter-by-text" id="filter-by-text" type="text" placeholder="Texte"/>
+        </label>
+        <button id="search-by-text">Rechercher</button>
+
+        <label>Filtrer par date
+            <input name="filter-by-date" type="text"/>
+        </label>
+    </header>
+
+    <body>
+        <div id="content"></div>
     </body>
 
     <script>
-        function request()
-        {
-            var query = "PREFIX dbpedia2: <http://dbpedia.org/resource/> PREFIX abs: <http://dbpedia.org/ontology/> SELECT ?film WHERE { ?film a abs:Film. }"
-            var url = "http://dbpedia.org/sparql";
-            url =  url+"?query="+ encodeURIComponent(query) +"&format=json";
-
-            console.log(query);
-
-            return axios.get(url)
-                .then(res => {
-                    console.log(res);
-                }).catch(err => console.log(err));
-            ;
-        }
-
-        request();
-
     </script>
 </html>
