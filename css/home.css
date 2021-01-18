@@ -1,0 +1,133 @@
+body {
+    background-color: #141414;
+}
+
+#spinner
+{
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+
+#content {
+    background-color: #272727;
+}
+
+/* Header style  */
+    header{
+        height: 100px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    header > label, header > button{
+        margin: 0 20px 0 0;
+    }
+
+    #filter-by-text{
+        width: 300px;
+    }
+
+    header > button{
+        height: 36px;
+    }
+
+/* Film Container Style */
+
+    #content > div
+    {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-bottom: 30px solid #141414;
+    }
+
+    .main-title {
+        color: #F0F0F0;
+        height: 75px;
+        display: flex;
+        align-items: center;
+    }
+
+    .main-title:hover
+    {
+        cursor: pointer;
+    }
+
+    .filmContainer
+    {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .open
+    {
+        -webkit-transition: max-height 1s ease;
+        -moz-transition: max-height 1s ease;
+        -o-transition: max-height 1s ease;
+        -ms-transition: max-height 1s ease;
+            transition: max-height 1s ease;
+        overflow: hidden;
+        overflow-y: scroll;
+
+        max-height: 500px;
+    }
+
+    .close
+    {
+        -webkit-transition: max-height 1s ease;
+        -moz-transition: max-height 1s ease;
+        -o-transition: max-height 1s ease;
+        -ms-transition: max-height 1s ease;
+            transition: max-height 1s ease;
+        overflow: hidden;
+        max-height: 0px;
+    }
+
+/* Scroll style */
+
+    .open::-webkit-scrollbar
+    {
+        width: 10px;
+        border-left: 1px solid #3F3F3F;
+    }
+
+    .open::-webkit-scrollbar-thumb
+    {
+        border-radius: 10px;
+        background-color: #E8DEC3;
+    }
+
+/* Film Style */
+
+    .film
+    {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .filmName {
+        color: #5E5E5E;
+    }
+
+    .film:hover .filmName
+    {
+        -webkit-transition: color 0.5s ease;
+        -moz-transition: color 0.5s ease;
+        -o-transition: color 0.5s ease;
+        -ms-transition: color 0.5s ease;
+            transition: color 0.5s ease;
+
+        color: #F0F0F0;
+    }
+
+    .film-img {
+        width: 100%;
+        height: auto;
+        max-width: 250px;
+        max-height: 370px;
+    }
