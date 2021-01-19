@@ -9,62 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     homePage.addEventListener("click", homePageDisplay);
 
-    homePage.addEventListener("click", async event => {
-
-        const mostPopular = new QueryBuilder();
-
-        var matchingResults = {};
-
-        // films les plus populaires
-        mostPopular.addPrefix("dbr", "<http://dbpedia.org/resource/>")
-            .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
-            .addPrefix("dbp", "<http://dbpedia.org/property/>")
-            .selectDistinct("name", "wikiID", "gross")
-            .where("?film a dbo:Film;")
-            .andWhere("dbp:name ?name;")
-            .andWhere("dbo:gross ?gross;")
-            .andWhere("dbo:wikiPageID ?wikiID")
-            .filter(`regex(lcase(str(?name)) ,lcase(".*avat.*"))`)
-            .filter(`langMatches(lang(?name), "en")`);
-        
-        const latest = new QueryBuilder();
-        
-        // films les plus récents
-        latest.addPrefix("dbr", "<http://dbpedia.org/resource/>")
-            .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
-            .addPrefix("dbp", "<http://dbpedia.org/property/>")
-            .selectDistinct("name", "wikiID", "what")
-            .where("?film a dbo:Film;")
-            .andWhere("dbp:name ?name;")
-            .andWhere("dbo:wikiPageID ?wikiID;")
-            .andWhere("<http://purl.org/dc/terms/subject> ?what")
-            .filter(`regex(lcase(str(?what)) ,lcase(".*Category:[1-2][0-9][0-9][0-9]_films.*"))`)
-            .filter(`regex(lcase(str(?name)) ,lcase(".*avat.*"))`)
-            .filter(`langMatches(lang(?name), "en")`)
-            .orderBy(`DESC(str(?what))`);
-        
-
-        try
-        {
-            $content.innerHTML = "";
-            $spinner.style.display = "block";
-            var result = await mostPopular.request();
-            matchingResults.mostPopular = result.data.results.bindings;
-            sortMoviesByGross(matchingResults.mostPopular);
-
-            result = await latest.request();
-            matchingResults.latest = result.data.results.bindings;
-            $content.appendChild(await createFilmContainer(`Films les plus populaires`, matchingResults.mostPopular));
-            $content.appendChild(await createFilmContainer(`Les derniers films`, matchingResults.latest));
-            $spinner.style.display = "none";
-            
-        } catch(err)
-        {
-            console.log(err);
-        }
-
-    });
-
     const searchByText = document.getElementById("search-by-text");
     searchByText.addEventListener("click", async event => {
         const text = document.getElementById("filter-by-text").value.trim();
@@ -159,7 +103,8 @@ const homePageDisplay = async () => {
         .andWhere("dbp:name ?name;")
         .andWhere("dbo:gross ?gross;")
         .andWhere("dbo:wikiPageID ?wikiID")
-        .filter(`langMatches(lang(?name), "en")`);
+        .filter(`langMatches(lang(?name), "en")`)
+        .limit(10);
     
     const latest = new QueryBuilder();
     
@@ -176,7 +121,8 @@ const homePageDisplay = async () => {
         .filter(`regex(lcase(str(?what)) ,lcase(".*Category:[1-2][0-9][0-9][0-9]_films.*"))`)
         .filter(`regex(lcase(str(?name)) ,lcase(".*avat.*"))`)
         .filter(`langMatches(lang(?name), "en")`)
-        .orderBy(`DESC(str(?what))`);
+        .orderBy(`DESC(str(?what))`)
+        .limit(10);
     
 
     try
