@@ -1,0 +1,111 @@
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
+
+        <div class="container w-75">
+            
+            <div class="card">
+                <div class="card-body">
+                    <h5 id="name" class="card-title"></h5>
+                </div>
+                <table>
+                    <tr>
+                        <td>Pays : </td>
+                        <td id="country"></td>
+                    </tr>
+                    <tr>
+                        <td>Synopsys : </td>
+                        <td id="abstract"></td>
+                    </tr>
+                    <tr>
+                        <td>Pays : </td>
+                        <td id="country"></td>
+                    </tr>
+                    <tr>
+                        <td>Pays : </td>
+                        <td id="country"></td>
+                    </tr>
+                    <tr>
+                        <td>Pays : </td>
+                        <td id="country"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+    </body>
+
+    <script>
+        function request()
+        {       
+/*
+            Informations du film :
+                - Titre/name (Original et autres)
+                - Catégorie
+                - Synopsis
+                - Acteurs
+                - Réalisateur
+                - Producteur
+                - Pays
+                - année de sortie
+                - Durée
+                - VO
+                - Auteur/Scénariste
+                - Montage
+                - Musique
+                - Photographie
+                - Société de production
+*/
+            var query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf−schema#>"+
+                        "PREFIX dbo: <http://dbpedia.org/ontology/>"+
+                        "PREFIX dbp: <http://dbpedia.org/property/>"+
+
+                        "SELECT DISTINCT * WHERE {"+
+                        "?movie a dbo:Film ."+
+                        "?movie dbp:name ?name ."+
+                        "?movie dbo:abstract ?abstract ."+
+                        "?movie dbp:country ?country ."+
+                        //"?country dbp:label ?label ."+
+                        "?movie dbp:runtime ?runtime ."+
+                        "?movie dbp:language ?language ."+
+                        "?movie dbp:director ?director ."+
+                        "?movie dbp:producer ?producer ."+
+                        "?movie dbp:music ?music ."+
+                        "?movie dbp:distributor ?distributor ."+
+                        //"?movie dbp:image ?photo ."
+                        //"?movie dbp:language ?language ."+
+                        //"?movie dbp:language ?language ."+
+                        //"?movie dbp:language ?language ."+
+
+
+                        "filter regex(lcase(str(?name)) ,lcase('.*Titanic.*'))"+
+                        "filter langMatches(lang(?abstract), 'fr')"+
+                        "}";
+
+            var url = "http://dbpedia.org/sparql";
+            url =  url+"?query="+ encodeURIComponent(query) +"&format=json";
+
+            console.log(query);
+
+            return axios.get(url)
+                .then(res => {
+                    //console.log("résultat", res);
+                    var data = res.data.results.bindings;
+                    var countryParts = data[0].country.value.split('/');
+                    var countryName = countryParts[countryParts.length - 1];
+                    console.log("data", data[0], "\n\n", countryName)
+                    document.getElementById("name").innerHTML = data[0].name.value;
+                    document.getElementById("country").innerHTML = countryName;
+                    document.getElementById("abstract").innerHTML = data[0].abstract.value;
+                }).catch(err => console.log(err));
+            ;
+        }
+
+        request();
+
+    </script>
+</html>

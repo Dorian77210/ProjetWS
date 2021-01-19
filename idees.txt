@@ -9,3 +9,24 @@ Accueil ->
 
 
     On pourrait rechercher des films par le nom, ou une personne qui est liée à un film
+
+
+
+
+    Informations du film :
+     - Titre (Original et autres)
+     - Catégorie
+     - Synopsis
+     - Acteurs
+     - Réalisateur
+     - Producteur
+     - Format
+     - Pays
+     - année de sortie
+     - Durée
+     - VO
+     - Auteur/Scénariste
+     - Montage
+     - Musique
+     - Photographie
+     - Société de production
