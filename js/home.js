@@ -2,7 +2,66 @@ document.addEventListener("DOMContentLoaded", () => {
     const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
 
+<<<<<<< HEAD
     loadFilmByGenre();
+=======
+    const homePage = document.getElementById("home-page");
+    homePage.addEventListener("click", async event => {
+
+        const mostPopular = new QueryBuilder();
+
+        var matchingResults = {};
+
+        // films les plus populaires
+        mostPopular.addPrefix("dbr", "<http://dbpedia.org/resource/>")
+            .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
+            .addPrefix("dbp", "<http://dbpedia.org/property/>")
+            .selectDistinct("name", "wikiID", "gross")
+            .where("?film a dbo:Film;")
+            .andWhere("dbp:name ?name;")
+            .andWhere("dbo:gross ?gross;")
+            .andWhere("dbo:wikiPageID ?wikiID")
+            .filter(`regex(lcase(str(?name)) ,lcase(".*avat.*"))`)
+            .filter(`langMatches(lang(?name), "en")`);
+        
+        const latest = new QueryBuilder();
+        
+        // films les plus récents
+        latest.addPrefix("dbr", "<http://dbpedia.org/resource/>")
+            .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
+            .addPrefix("dbp", "<http://dbpedia.org/property/>")
+            .selectDistinct("name", "wikiID", "what")
+            .where("?film a dbo:Film;")
+            .andWhere("dbp:name ?name;")
+            .andWhere("dbo:wikiPageID ?wikiID;")
+            .andWhere("<http://purl.org/dc/terms/subject> ?what")
+            .filter(`regex(lcase(str(?what)) ,lcase(".*Category:[1-2][0-9][0-9][0-9]_films.*"))`)
+            .filter(`regex(lcase(str(?name)) ,lcase(".*avat.*"))`)
+            .filter(`langMatches(lang(?name), "en")`)
+            .orderBy(`DESC(str(?what))`);
+        
+
+        try
+        {
+            $content.innerHTML = "";
+            $spinner.style.display = "block";
+            var result = await mostPopular.request();
+            matchingResults.mostPopular = result.data.results.bindings;
+            sortMoviesByGross(matchingResults.mostPopular);
+
+            result = await latest.request();
+            matchingResults.latest = result.data.results.bindings;
+            $content.appendChild(await createFilmContainer(`Films les plus populaires`, matchingResults.mostPopular));
+            $content.appendChild(await createFilmContainer(`Les derniers films`, matchingResults.latest));
+            $spinner.style.display = "none";
+            
+        } catch(err)
+        {
+            console.log(err);
+        }
+
+    });
+>>>>>>> ce3cf3789de8fae4eee7234a3075de95f928a1f0
 
 
     const searchByText = document.getElementById("search-by-text");
@@ -69,9 +128,9 @@ document.addEventListener("DOMContentLoaded", () => {
             matchingResults.byDirector = result.data.results.bindings;
 
             $spinner.style.display = "none";
-            $content.appendChild(createFilmContainer(`Films contenant "${text}"`, matchingResults.byFilm));
-            $content.appendChild(createFilmContainer(`Films dont le nom d'un acteur contient "${text}"`, matchingResults.byActor));
-            $content.appendChild(createFilmContainer(`Films dont le nom du directeur contient "${text}"`, matchingResults.byDirector));
+            $content.appendChild(await createFilmContainer(`Films contenant "${text}"`, matchingResults.byFilm));
+            $content.appendChild(await createFilmContainer(`Films dont le nom d'un acteur contient "${text}"`, matchingResults.byActor));
+            $content.appendChild(await createFilmContainer(`Films dont le nom du directeur contient "${text}"`, matchingResults.byDirector));
             
         } catch(err)
         {
@@ -80,6 +139,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 });
+
+const sortMoviesByGross = (moviesList) => {
+    moviesList.forEach( movie => {
+        eIndex = movie.gross.value.indexOf('E');
+        if (eIndex != "-1"){
+            basicValue = parseFloat(movie.gross.value.substr(0, eIndex));
+            powerOfTen = parseInt(movie.gross.value.substr(eIndex+1));
+            numericGrossValue = basicValue * Math.pow(10, powerOfTen);
+            movie.gross.value = numericGrossValue;
+        }
+        else{
+            movie.gross.value = parseFloat(movie.gross.value);
+        }
+    })
+
+    moviesList.sort(function(a, b) { 
+        return b.gross.value - a.gross.value;
+    })
+}
 
 const toggleDiv = div => {
     if (div.classList.contains("close"))
@@ -94,7 +172,7 @@ const toggleDiv = div => {
     }
 }
 
-const createFilmContainer = (title, films) => {
+const createFilmContainer = async (title, films) => {
     // on affiche les films
     var $filmContent = document.createElement("div");
 
@@ -112,7 +190,7 @@ const createFilmContainer = (title, films) => {
     $title.onclick = () => toggleDiv($filmContainer);
     
     const screenWidth = window.screen.width;
-    films.forEach(async film => {
+    for (const film of films){
         const $film = document.createElement("div");
         $film.classList.add("film");
 
@@ -121,7 +199,6 @@ const createFilmContainer = (title, films) => {
         var $filmName = document.createElement("h5");
         $filmName.classList.add("filmName");
         $filmName.textContent = film.name.value;
-
         var imageURL = await getImageURL(film.wikiID.value);
         if (imageURL === "")
         {
@@ -135,7 +212,7 @@ const createFilmContainer = (title, films) => {
         $film.appendChild($img);
 
         $filmContainer.appendChild($film);
-    });
+    };
 
     $filmContent.appendChild($filmContainer);
 
