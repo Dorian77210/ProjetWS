@@ -99,17 +99,7 @@ class QueryBuilder
 
     __toString()
     {
-<<<<<<< HEAD
         var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.optionalBody} ${this.bindBody} ${this.filterBody} } ${this.limitBody}`;
-=======
-        var res = `${this.prefix} SELECT ${this.selectBody} 
-                                  WHERE { ${this.whereBody} 
-                                          ${this.optionalBody} 
-                                          ${this.filterBody} 
-                                        } 
-                                        ${this.orderByBody}
-                                        ${this.limitBody}`;
->>>>>>> d96273625518d0f223656a58802e3357ae5be54d
         
         return res;
     }
