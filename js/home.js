@@ -2,9 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
 
-<<<<<<< HEAD
     loadFilmByGenre();
-=======
     const homePage = document.getElementById("home-page");
     homePage.addEventListener("click", async event => {
 
@@ -61,8 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     });
->>>>>>> ce3cf3789de8fae4eee7234a3075de95f928a1f0
-
 
     const searchByText = document.getElementById("search-by-text");
     searchByText.addEventListener("click", async event => {
