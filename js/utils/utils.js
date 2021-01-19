@@ -8,7 +8,6 @@ class QueryBuilder
         this.whereBody = "";
         this.selectBody = "";
         this.filterBody = "";
-        this.orderByBody = "";
         this.optionalBody = "";
         this.limitBody = "";
         this.orderByBody = "";
