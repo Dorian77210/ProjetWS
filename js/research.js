@@ -115,17 +115,17 @@ const createFilmContainer = (title, films) => {
         const $img = document.createElement("img");
 
         var $filmName = document.createElement("h5");
+        $filmName.classList.add("filmName");
         $filmName.textContent = film.name.value;
 
         var imageURL = await getImageURL(film.wikiID.value);
         if (imageURL === "")
         {
-            imageURL = "./../img/no-image-available.png";
+            imageURL = "./../img/no-poster-available.png";
         }
 
         $img.setAttribute("src", imageURL);
         $img.classList.add("film-img");
-        $img.style.width = `${(screenWidth / 4) - 20}px`;
 
         $film.appendChild($filmName);
         $film.appendChild($img);

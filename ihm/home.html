@@ -5,19 +5,20 @@
         <script src="./../js/utils/utils.js"></script>
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <link rel="stylesheet" href="./../css/style.css">
+        <link rel="stylesheet" href="./../css/home.css">
         <meta charset="utf-8">
     </head>
 
     <header>
         <label>
-            <input name="filter-by-text" id="filter-by-text" type="text" placeholder="Texte"/>
+            <input name="filter-by-text" id="filter-by-text" class="form-control" type="text" placeholder="Titre, acteurs, producteur..."/>
         </label>
-        <button id="search-by-text">Rechercher</button>
+    
+<!--    <label>
+            <input name="filter-by-date" class="form-control" placeholder="dd/mm/yyyy" type="text"/>
+        </label>-->
 
-        <label>Filtrer par date
-            <input name="filter-by-date" type="text"/>
-        </label>
+        <button id="search-by-text" type="button" class="btn btn-light">Rechercher</button>
     </header>
 
     <body>
