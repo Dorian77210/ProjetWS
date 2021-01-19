@@ -89,12 +89,12 @@ const homePageDisplay = async () => {
     const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
 
-    const homePage = document.getElementById("home-page");
     const mostPopular = new QueryBuilder();
 
     var matchingResults = {};
 
     // films les plus populaires
+    // TODO: verifier la coherence des gross
     mostPopular.addPrefix("dbr", "<http://dbpedia.org/resource/>")
         .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
         .addPrefix("dbp", "<http://dbpedia.org/property/>")
@@ -124,7 +124,6 @@ const homePageDisplay = async () => {
         .orderBy(`DESC(str(?what))`)
         .limit(10);
     
-
     try
     {
         $content.innerHTML = "";
@@ -132,6 +131,8 @@ const homePageDisplay = async () => {
         var result = await mostPopular.request();
         matchingResults.mostPopular = result.data.results.bindings;
         sortMoviesByGross(matchingResults.mostPopular);
+
+        console.log(matchingResults.mostPopular);
 
         result = await latest.request();
         matchingResults.latest = result.data.results.bindings;
