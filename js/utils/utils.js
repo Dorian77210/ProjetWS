@@ -8,6 +8,8 @@ class QueryBuilder
         this.whereBody = "";
         this.selectBody = "";
         this.filterBody = "";
+        this.optionalBody = "";
+        this.limitBody = "";
     }
 
     /**
@@ -83,10 +85,38 @@ class QueryBuilder
 
     __toString()
     {
-        var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.filterBody} `;
-        res += "}";
+        var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.optionalBody} ${this.filterBody} } ${this.limitBody}`;
         
         return res;
+    }
+
+
+    /**
+     * Permet d'ajouter une clause OPTIONAL
+     * @param  {...any} properties Les propriétés de la forme "?prop dbo:property ?property"
+     * @return L'objet courant
+     */
+    optional(...properties)
+    {
+        for (property of properties)
+        {
+            this.optionalBody += `OPTIONAL {${property}} \n`;
+        }
+
+        return this;
+    }
+
+    /**
+     * Permet de limiter le nombre de résultat de la requête
+     * @param {Number} count Le nombre de résultat
+     * @return L'objet courant
+     */
+    limit(count)
+    {
+        if (this.limitBody === "")
+        {
+            this.limitBody = `LIMIT ${count}`;
+        }
     }
 
     request()
