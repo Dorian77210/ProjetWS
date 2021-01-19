@@ -2,6 +2,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
 
+    // loadFilmByGenre();
+    const homePage = document.getElementById("home-page");
+
+    homePageDisplay();
+
+    homePage.addEventListener("click", homePageDisplay);
 
     const searchByText = document.getElementById("search-by-text");
     searchByText.addEventListener("click", async event => {
@@ -23,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .optional("?film dbo:gross ?gross")
             .filter(`regex(lcase(str(?name)) ,lcase(".*${text}.*"))`)
             .filter(`langMatches(lang(?name), "en")`)
-            .orderBy("DESC", "gross");
+            .orderBy("DESC(str(?gross))");
 
             console.log(byFilm.__toString());
         
@@ -38,8 +44,10 @@ document.addEventListener("DOMContentLoaded", () => {
             .andWhere("dbp:starring ?actors;")
             .andWhere("dbp:name ?name;")
             .andWhere("dbo:wikiPageID ?wikiID")
+            .optional("?film dbo:gross ?gross")
             .filter(`regex(lcase(str(?actors)) ,lcase(".*${text}.*"))`)
-            .filter(`langMatches(lang(?name), "en")`);
+            .filter(`langMatches(lang(?name), "en")`)
+            .orderBy("DESC(str(?gross))");
 
         const byDirector = new QueryBuilder();
 
@@ -52,8 +60,10 @@ document.addEventListener("DOMContentLoaded", () => {
             .andWhere("dbo:director ?director;")
             .andWhere("dbp:name ?name;")
             .andWhere("dbo:wikiPageID ?wikiID")
+            .optional("?film dbo:gross ?gross")
             .filter(`regex(lcase(str(?director)) ,lcase(".*${text}.*"))`)
-            .filter(`langMatches(lang(?name), "en")`);
+            .filter(`langMatches(lang(?name), "en")`)
+            .orderBy("DESC(str(?gross))");
 
         try
         {
@@ -69,9 +79,9 @@ document.addEventListener("DOMContentLoaded", () => {
             matchingResults.byDirector = result.data.results.bindings;
 
             $spinner.style.display = "none";
-            $content.appendChild(createFilmContainer(`Films contenant "${text}"`, matchingResults.byFilm));
-            $content.appendChild(createFilmContainer(`Films dont le nom d'un acteur contient "${text}"`, matchingResults.byActor));
-            $content.appendChild(createFilmContainer(`Films dont le nom du directeur contient "${text}"`, matchingResults.byDirector));
+            $content.appendChild(await createFilmContainer(`Films contenant "${text}"`, matchingResults.byFilm));
+            $content.appendChild(await createFilmContainer(`Films dont le nom d'un acteur contient "${text}"`, matchingResults.byActor));
+            $content.appendChild(await createFilmContainer(`Films dont le nom du directeur contient "${text}"`, matchingResults.byDirector));
             
         } catch(err)
         {
@@ -80,6 +90,86 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 });
+
+const homePageDisplay = async () => {
+    const $content = document.getElementById("content");
+    const $spinner = document.getElementById("spinner");
+
+    const mostPopular = new QueryBuilder();
+
+    var matchingResults = {};
+
+    // films les plus populaires
+    // TODO: verifier la coherence des gross
+    mostPopular.addPrefix("dbr", "<http://dbpedia.org/resource/>")
+        .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
+        .addPrefix("dbp", "<http://dbpedia.org/property/>")
+        .selectDistinct("name", "wikiID", "gross")
+        .where("?film a dbo:Film;")
+        .andWhere("dbp:name ?name;")
+        .andWhere("dbo:gross ?gross;")
+        .andWhere("dbo:wikiPageID ?wikiID")
+        .filter(`langMatches(lang(?name), "en")`)
+        .limit(10);
+    
+    const latest = new QueryBuilder();
+    
+    // films les plus récents
+    //TODO: investigate on distinct not working
+    latest.addPrefix("dbr", "<http://dbpedia.org/resource/>")
+        .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
+        .addPrefix("dbp", "<http://dbpedia.org/property/>")
+        .selectDistinct("name", "wikiID", "what")
+        .where("?film a dbo:Film;")
+        .andWhere("dbp:name ?name;")
+        .andWhere("dbo:wikiPageID ?wikiID;")
+        .andWhere("<http://purl.org/dc/terms/subject> ?what")
+        .filter(`regex(lcase(str(?what)) ,lcase(".*Category:[1-2][0-9][0-9][0-9]_films.*"))`)
+        .filter(`regex(lcase(str(?name)) ,lcase(".*avat.*"))`)
+        .filter(`langMatches(lang(?name), "en")`)
+        .orderBy(`DESC(str(?what))`)
+        .limit(10);
+    
+    try
+    {
+        $content.innerHTML = "";
+        $spinner.style.display = "block";
+        var result = await mostPopular.request();
+        matchingResults.mostPopular = result.data.results.bindings;
+        sortMoviesByGross(matchingResults.mostPopular);
+
+        console.log(matchingResults.mostPopular);
+
+        result = await latest.request();
+        matchingResults.latest = result.data.results.bindings;
+        $content.appendChild(await createFilmContainer(`Films les plus populaires`, matchingResults.mostPopular));
+        $content.appendChild(await createFilmContainer(`Les derniers films`, matchingResults.latest));
+        $spinner.style.display = "none";
+        
+    } catch(err)
+    {
+        console.log(err);
+    }
+}
+
+const sortMoviesByGross = (moviesList) => {
+    moviesList.forEach( movie => {
+        eIndex = movie.gross.value.indexOf('E');
+        if (eIndex != "-1"){
+            basicValue = parseFloat(movie.gross.value.substr(0, eIndex));
+            powerOfTen = parseInt(movie.gross.value.substr(eIndex+1));
+            numericGrossValue = basicValue * Math.pow(10, powerOfTen);
+            movie.gross.value = numericGrossValue;
+        }
+        else{
+            movie.gross.value = parseFloat(movie.gross.value);
+        }
+    })
+
+    moviesList.sort(function(a, b) { 
+        return b.gross.value - a.gross.value;
+    })
+}
 
 const toggleDiv = div => {
     if (div.classList.contains("close"))
@@ -94,7 +184,7 @@ const toggleDiv = div => {
     }
 }
 
-const createFilmContainer = (title, films) => {
+const createFilmContainer = async (title, films) => {
     // on affiche les films
     var $filmContent = document.createElement("div");
 
@@ -111,7 +201,7 @@ const createFilmContainer = (title, films) => {
 
     $title.onclick = () => toggleDiv($filmContainer);
     
-    films.forEach(async film => {
+    for (const film of films){
         const $film = document.createElement("div");
         $film.classList.add("film");
 
@@ -120,7 +210,6 @@ const createFilmContainer = (title, films) => {
         var $filmName = document.createElement("h5");
         $filmName.classList.add("filmName");
         $filmName.textContent = film.name.value;
-
         var imageURL = await getImageURL(film.wikiID.value);
         if (imageURL === "")
         {
@@ -134,9 +223,57 @@ const createFilmContainer = (title, films) => {
         $film.appendChild($img);
 
         $filmContainer.appendChild($film);
-    });
+    };
 
     $filmContent.appendChild($filmContainer);
 
     return $filmContent;
+}
+
+async function loadFilmByGenre() {
+
+    var genres = ["Romance films", "Historical films", "Horror films", "Action films", "Adventure films", "Sports films", "Documentary films", "Thriller films", "Science fiction films"]
+    var matchingResults = {};
+
+    var filter = "";
+
+    
+    for(var i=0;i<genres.length; i++) {
+        filter = filter + `contains(lcase(str(?genreName)) ,lcase(${genre}))`;
+        if(i < genres.length - 1)
+            filter = filter + ' || ';
+    }
+        const builder = new QueryBuilder();
+
+        // films par le nom des acteurs
+        builder.addPrefix("dbr", "<http://dbpedia.org/resource/>")
+            .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
+            .addPrefix("dbp", "<http://dbpedia.org/property/>")
+            .addPrefix("dct", "<http://purl.org/dc/terms/>")
+            .addPrefix("skos", "<http://www.w3.org/2004/02/skos/core#>")
+            .selectDistinct("name", "wikiID", "genre")
+            .where("?film a dbo:Film;")
+            .andWhere("dbp:name ?name;")
+            .andWhere("dbo:wikiPageID ?wikiID;")
+            .andWhere("dct:subject ?genreLink.")
+            .andWhere("?genreLink rdfs:label ?genreName")
+            .filter(filter)
+            .filter(`langMatches(lang(?name), "en")`)
+
+        console.log(builder.__toString());
+
+        try
+        {
+            console.log("bite");
+            var result = await builder.request();
+            matchingResults[genre] = result.data.results.bindings;
+            
+            console.log("penis");
+            console.log(matchingResults);
+            
+        } catch(err)
+        {
+            console.log(err);
+        }
+    
 }

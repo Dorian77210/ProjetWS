@@ -8,6 +8,7 @@ class QueryBuilder
         this.whereBody = "";
         this.selectBody = "";
         this.filterBody = "";
+        this.orderByBody = "";
         this.optionalBody = "";
         this.limitBody = "";
         this.orderByBody = "";
@@ -89,10 +90,22 @@ class QueryBuilder
         this.prefix += `PREFIX ${alias}: ${uri} \n`;
         return this;
     }
+    
+    orderBy(content)
+    {
+        this.orderByBody += `ORDER BY ${content}`;
+        return this;
+    }
 
     __toString()
     {
-        var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.optionalBody} ${this.filterBody}} ${this.orderByBody} ${this.limitBody}`;
+        var res = `${this.prefix} SELECT ${this.selectBody} 
+                                  WHERE { ${this.whereBody} 
+                                          ${this.optionalBody} 
+                                          ${this.filterBody} 
+                                        } 
+                                        ${this.orderByBody}
+                                        ${this.limitBody}`;
         
         return res;
     }
@@ -143,8 +156,12 @@ const getImageURL = async wikiID =>
 {
     var url = `https://en.wikipedia.org/w/api.php?origin=*&action=query&pageids=${wikiID}&prop=pageprops&format=json`;
     var result = await axios.get(url);
-
-    const pageImage = result.data.query.pages[wikiID].pageprops.page_image;
+    if('pageprops' in result.data.query.pages[wikiID]){
+        var pageImage = result.data.query.pages[wikiID].pageprops.page_image;
+    }
+    else {
+        return "";
+    }
 
     url = `https://en.wikipedia.org/w/api.php?origin=*&action=query&titles=Image:${pageImage}&prop=imageinfo&iiprop=url&format=json`;
     var result = await axios.get(url);
