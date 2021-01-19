@@ -11,6 +11,7 @@ class QueryBuilder
         this.optionalBody = "";
         this.bindBody = "";
         this.limitBody = "";
+        this.orderByBody = "";
     }
 
     /**
@@ -72,6 +73,12 @@ class QueryBuilder
         return this;
     }
 
+    orderBy(orderType, value)
+    {
+        this.orderByBody += `ORDER BY ${orderType} (?${value})\n`;
+        return this;
+    }
+
     /**
      * Permet d'ajouter un préfixe dans la requête
      * @param {String} alias L'alias du préfixe 
@@ -83,10 +90,26 @@ class QueryBuilder
         this.prefix += `PREFIX ${alias}: ${uri} \n`;
         return this;
     }
+    
+    orderBy(content)
+    {
+        this.orderByBody += `ORDER BY ${content}`;
+        return this;
+    }
 
     __toString()
     {
+<<<<<<< HEAD
         var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.optionalBody} ${this.bindBody} ${this.filterBody} } ${this.limitBody}`;
+=======
+        var res = `${this.prefix} SELECT ${this.selectBody} 
+                                  WHERE { ${this.whereBody} 
+                                          ${this.optionalBody} 
+                                          ${this.filterBody} 
+                                        } 
+                                        ${this.orderByBody}
+                                        ${this.limitBody}`;
+>>>>>>> d96273625518d0f223656a58802e3357ae5be54d
         
         return res;
     }
@@ -153,8 +176,12 @@ const getImageURL = async wikiID =>
 {
     var url = `https://en.wikipedia.org/w/api.php?origin=*&action=query&pageids=${wikiID}&prop=pageprops&format=json`;
     var result = await axios.get(url);
-
-    const pageImage = result.data.query.pages[wikiID].pageprops.page_image;
+    if('pageprops' in result.data.query.pages[wikiID]){
+        var pageImage = result.data.query.pages[wikiID].pageprops.page_image;
+    }
+    else {
+        return "";
+    }
 
     url = `https://en.wikipedia.org/w/api.php?origin=*&action=query&titles=Image:${pageImage}&prop=imageinfo&iiprop=url&format=json`;
     var result = await axios.get(url);
