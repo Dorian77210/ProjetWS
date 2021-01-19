@@ -8,6 +8,7 @@ class QueryBuilder
         this.whereBody = "";
         this.selectBody = "";
         this.filterBody = "";
+        this.orderByBody = "";
     }
 
     /**
@@ -66,6 +67,12 @@ class QueryBuilder
     filter(f)
     {
         this.filterBody += "FILTER " + f + "\n";
+        return this;
+    }
+
+    orderBy(orderType, value)
+    {
+        this.orderByBody += `ORDER BY ${orderType} (?${value})\n`;
         return this;
     }
 

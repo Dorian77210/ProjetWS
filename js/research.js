@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
             .andWhere("dbo:wikiPageID ?wikiID")
             .filter(`regex(lcase(str(?name)) ,lcase(".*${text}.*"))`)
             .filter(`langMatches(lang(?name), "en")`);
+
+            console.log(byFilm.__toString());
         
         const byActor = new QueryBuilder();
 
