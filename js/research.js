@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .andWhere("dbo:wikiPageID ?wikiID")
             .filter(`regex(lcase(str(?actors)) ,lcase(".*${text}.*"))`)
             .filter(`langMatches(lang(?name), "en")`);
-
+        console.log(byActor.__toString());
         const byDirector = new QueryBuilder();
 
         // films par le nom du réalisateur
@@ -117,8 +117,6 @@ const createFilmContainer = (title, films) => {
         var $filmName = document.createElement("h5");
         $filmName.textContent = film.name.value;
 
-        console.log(film);
-
         var imageURL = await getImageURL(film.wikiID.value);
         if (imageURL === "")
         {
@@ -131,8 +129,6 @@ const createFilmContainer = (title, films) => {
 
         $film.appendChild($filmName);
         $film.appendChild($img);
-
-        console.log($img);
 
         $filmContainer.appendChild($film);
     });
