@@ -16,12 +16,14 @@ document.addEventListener("DOMContentLoaded", () => {
         byFilm.addPrefix("dbr", "<http://dbpedia.org/resource/>")
             .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
             .addPrefix("dbp", "<http://dbpedia.org/property/>")
-            .selectDistinct("name", "wikiID")
+            .selectDistinct("name", "wikiID", "gross")
             .where("?film a dbo:Film;")
             .andWhere("dbp:name ?name;")
             .andWhere("dbo:wikiPageID ?wikiID")
+            .optional("?film dbo:gross ?gross")
             .filter(`regex(lcase(str(?name)) ,lcase(".*${text}.*"))`)
-            .filter(`langMatches(lang(?name), "en")`);
+            .filter(`langMatches(lang(?name), "en")`)
+            .orderBy("DESC", "gross");
 
             console.log(byFilm.__toString());
         
@@ -109,7 +111,6 @@ const createFilmContainer = (title, films) => {
 
     $title.onclick = () => toggleDiv($filmContainer);
     
-    const screenWidth = window.screen.width;
     films.forEach(async film => {
         const $film = document.createElement("div");
         $film.classList.add("film");
@@ -119,8 +120,6 @@ const createFilmContainer = (title, films) => {
         var $filmName = document.createElement("h5");
         $filmName.classList.add("filmName");
         $filmName.textContent = film.name.value;
-
-        console.log(film);
 
         var imageURL = await getImageURL(film.wikiID.value);
         if (imageURL === "")
@@ -133,8 +132,6 @@ const createFilmContainer = (title, films) => {
 
         $film.appendChild($filmName);
         $film.appendChild($img);
-
-        console.log($img);
 
         $filmContainer.appendChild($film);
     });
