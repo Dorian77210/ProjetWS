@@ -9,6 +9,7 @@ class QueryBuilder
         this.selectBody = "";
         this.filterBody = "";
         this.optionalBody = "";
+        this.bindBody = "";
         this.limitBody = "";
     }
 
@@ -85,7 +86,7 @@ class QueryBuilder
 
     __toString()
     {
-        var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.optionalBody} ${this.filterBody} } ${this.limitBody}`;
+        var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.optionalBody} ${this.bindBody} ${this.filterBody} } ${this.limitBody}`;
         
         return res;
     }
@@ -98,13 +99,29 @@ class QueryBuilder
      */
     optional(...properties)
     {
-        for (property of properties)
+        for (const property of properties)
         {
             this.optionalBody += `OPTIONAL {${property}} \n`;
         }
 
         return this;
     }
+
+    /**
+     * Permet d'ajouter une clause BIND
+     * @param  {...any} properties Les propriétés de la forme "?prop dbo:property ?property"
+     * @return L'objet courant
+     */
+    bind(...properties)
+    {
+        for (const property of properties)
+        {
+            this.bindBody += `BIND (if(exists{${condition}}, ${choice1}, ${choice2})) \n`;
+        }
+
+        return this;
+    }
+
 
     /**
      * Permet de limiter le nombre de résultat de la requête

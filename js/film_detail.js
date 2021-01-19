@@ -11,7 +11,7 @@ async function loadFilm() {
     byWikiID.addPrefix("dbr", "<http://dbpedia.org/resource/>")
     .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
     .addPrefix("dbp", "<http://dbpedia.org/property/>")
-    .selectDistinct("name","abstract", "country", "runtime", "language", "director")
+    .selectDistinct("name","abstract", "country", "runtime", "language", "directorName", "starring")
     .where("?film a dbo:Film;")
     .andWhere("dbp:name ?name;")
     .andWhere("dbo:abstract ?abstract;")
@@ -19,12 +19,16 @@ async function loadFilm() {
     .andWhere("dbp:runtime ?runtime;")
     .andWhere("dbp:language ?language;")
     .andWhere("dbp:director ?director;")
+    .addWhere("dbo:starring ?starring ;")
     //.addWhere("dbp:producer ?producer;")
     //.addWhere("dbp:music ?music;")
     //.addWhere("dbp:distributor ?distributor;")
     .andWhere("dbo:wikiPageID "+$wikiID)
-    .
-    .filter(`langMatches(lang(?name), "en")`);
+    .optional("?country rdfs:label ?countryLabel. FILTER(langMatches(lang(?countryLabel),'en')) ")
+    .optional("?starring rdfs:label ?starringLabel."+
+                "FILTER(langMatches(lang(?starringLabel),'en'))")
+    .filter(`langMatches(lang(?abstract), "en")`);
+
     console.log(byWikiID.__toString());
     var filmData = null;
     try {
