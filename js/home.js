@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .andWhere("dbo:wikiPageID ?wikiID")
             .filter(`regex(lcase(str(?actors)) ,lcase(".*${text}.*"))`)
             .filter(`langMatches(lang(?name), "en")`);
-        console.log(byActor.__toString());
+
         const byDirector = new QueryBuilder();
 
         // films par le nom du réalisateur
