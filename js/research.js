@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
 
+    $filmContent.onclick('window.location = ./filmDetail.html')
 
     const searchByText = document.getElementById("search-by-text");
     searchByText.addEventListener("click", async event => {
@@ -137,3 +138,5 @@ const createFilmContainer = (title, films) => {
 
     return $filmContent;
 }
+
+
