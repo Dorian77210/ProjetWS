@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
 
+    loadFilmByGenre();
+
 
     const searchByText = document.getElementById("search-by-text");
     searchByText.addEventListener("click", async event => {
@@ -22,6 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
             .andWhere("dbo:wikiPageID ?wikiID")
             .filter(`regex(lcase(str(?name)) ,lcase(".*${text}.*"))`)
             .filter(`langMatches(lang(?name), "en")`);
+
+        console.log(byFilm.__toString())
         
         const byActor = new QueryBuilder();
 
@@ -136,4 +140,52 @@ const createFilmContainer = (title, films) => {
     $filmContent.appendChild($filmContainer);
 
     return $filmContent;
+}
+
+async function loadFilmByGenre() {
+
+    var genres = ["Romance films", "Historical films", "Horror films", "Action films", "Adventure films", "Sports films", "Documentary films", "Thriller films", "Science fiction films"]
+    var matchingResults = {};
+
+    var filter = "";
+
+    
+    for(var i=0;i<genres.length; i++) {
+        filter = filter + `contains(lcase(str(?genreName)) ,lcase(${genre}))`;
+        if(i < genres.length - 1)
+            filter = filter + ' || ';
+    }
+        const builder = new QueryBuilder();
+
+        // films par le nom des acteurs
+        builder.addPrefix("dbr", "<http://dbpedia.org/resource/>")
+            .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
+            .addPrefix("dbp", "<http://dbpedia.org/property/>")
+            .addPrefix("dct", "<http://purl.org/dc/terms/>")
+            .addPrefix("skos", "<http://www.w3.org/2004/02/skos/core#>")
+            .selectDistinct("name", "wikiID", "genre")
+            .where("?film a dbo:Film;")
+            .andWhere("dbp:name ?name;")
+            .andWhere("dbo:wikiPageID ?wikiID;")
+            .andWhere("dct:subject ?genreLink.")
+            .andWhere("?genreLink rdfs:label ?genreName")
+            .filter(filter)
+            .filter(`langMatches(lang(?name), "en")`)
+
+        console.log(builder.__toString());
+
+        try
+        {
+            console.log("bite");
+            var result = await builder.request();
+            matchingResults[genre] = result.data.results.bindings;
+            
+            console.log("penis");
+            console.log(matchingResults);
+            
+        } catch(err)
+        {
+            console.log(err);
+        }
+    
 }
