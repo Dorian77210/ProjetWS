@@ -2,8 +2,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
 
-    loadFilmByGenre();
+    // loadFilmByGenre();
     const homePage = document.getElementById("home-page");
+
+    homePageDisplay();
+
+    homePage.addEventListener("click", homePageDisplay);
+
     homePage.addEventListener("click", async event => {
 
         const mostPopular = new QueryBuilder();
@@ -135,6 +140,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 });
+
+const homePageDisplay = async () => {
+    const $content = document.getElementById("content");
+    const $spinner = document.getElementById("spinner");
+
+    const homePage = document.getElementById("home-page");
+    const mostPopular = new QueryBuilder();
+
+    var matchingResults = {};
+
+    // films les plus populaires
+    mostPopular.addPrefix("dbr", "<http://dbpedia.org/resource/>")
+        .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
+        .addPrefix("dbp", "<http://dbpedia.org/property/>")
+        .selectDistinct("name", "wikiID", "gross")
+        .where("?film a dbo:Film;")
+        .andWhere("dbp:name ?name;")
+        .andWhere("dbo:gross ?gross;")
+        .andWhere("dbo:wikiPageID ?wikiID")
+        .filter(`langMatches(lang(?name), "en")`);
+    
+    const latest = new QueryBuilder();
+    
+    // films les plus récents
+    //TODO: investigate on distinct not working
+    latest.addPrefix("dbr", "<http://dbpedia.org/resource/>")
+        .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
+        .addPrefix("dbp", "<http://dbpedia.org/property/>")
+        .selectDistinct("name", "wikiID", "what")
+        .where("?film a dbo:Film;")
+        .andWhere("dbp:name ?name;")
+        .andWhere("dbo:wikiPageID ?wikiID;")
+        .andWhere("<http://purl.org/dc/terms/subject> ?what")
+        .filter(`regex(lcase(str(?what)) ,lcase(".*Category:[1-2][0-9][0-9][0-9]_films.*"))`)
+        .filter(`regex(lcase(str(?name)) ,lcase(".*avat.*"))`)
+        .filter(`langMatches(lang(?name), "en")`)
+        .orderBy(`DESC(str(?what))`);
+    
+
+    try
+    {
+        $content.innerHTML = "";
+        $spinner.style.display = "block";
+        var result = await mostPopular.request();
+        matchingResults.mostPopular = result.data.results.bindings;
+        sortMoviesByGross(matchingResults.mostPopular);
+
+        result = await latest.request();
+        matchingResults.latest = result.data.results.bindings;
+        $content.appendChild(await createFilmContainer(`Films les plus populaires`, matchingResults.mostPopular));
+        $content.appendChild(await createFilmContainer(`Les derniers films`, matchingResults.latest));
+        $spinner.style.display = "none";
+        
+    } catch(err)
+    {
+        console.log(err);
+    }
+}
 
 const sortMoviesByGross = (moviesList) => {
     moviesList.forEach( movie => {
