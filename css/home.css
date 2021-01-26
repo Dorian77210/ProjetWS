@@ -1,17 +1,22 @@
 body {
-    background-color: #141414;
+    background-color:#B81D24;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 #spinner
-{
+{   
     display: none;
     position: absolute;
     left: 50%;
     top: 50%;
+    
+}
+.text-success{
+    color: #F5F5F1!important;
 }
 
 #content {
-    background-color: #272727;
+    background-color:#B81D24;
 }
 
 /* Film Container Style */
@@ -21,11 +26,11 @@ body {
         display: flex;
         flex-direction: column;
         align-items: center;
-        border-bottom: 30px solid #141414;
+        border-bottom: 30px solid #221F1F;
     }
 
     .main-title {
-        color: #F0F0F0;
+        color: #F5F5F1;
         height: 75px;
         display: flex;
         align-items: center;
@@ -88,7 +93,7 @@ body {
     .open::-webkit-scrollbar-thumb
     {
         border-radius: 10px;
-        background-color: #E8DEC3;
+        background-color: #F5F5F1;
     }
 
 /* Film Style */
@@ -96,6 +101,7 @@ body {
     .film
     {
         padding: 10px;
+        padding-top: 25px;
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -103,7 +109,7 @@ body {
     }
 
     .filmName {
-        color: #5E5E5E;
+        color: #F5F5F1;
     }
 
     .film:hover .filmName
@@ -113,8 +119,17 @@ body {
         -o-transition: color 0.5s ease;
         -ms-transition: color 0.5s ease;
             transition: color 0.5s ease;
+        color: #221F1F;
+    }
 
-        color: #F0F0F0;
+    .film
+    {
+        transition: transform 1s, filter 1.5s ease-in-out;
+        transform-origin: center center;
+    }
+
+    .film:hover {
+        transform: scale(1.098);
     }
 
     .film-img {

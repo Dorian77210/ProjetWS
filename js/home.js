@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         {
             $content.innerHTML = "";
             $spinner.style.display = "block";
+            $content.style.filter= "brightness(0.4)";
             var result = await byFilm.request();
             matchingResults.byFilm = result.data.results.bindings;
             
@@ -92,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
             matchingResults.byDirector = result.data.results.bindings;
 
             $spinner.style.display = "none";
+            $content.style.filter= "brightness(1)";
             $content.appendChild(await createFilmContainer(`Films contenant "${text}"`, matchingResults.byFilm));
             $content.appendChild(await createFilmContainer(`Films dont le nom d'un acteur contient "${text}"`, matchingResults.byActor));
             $content.appendChild(await createFilmContainer(`Films dont le nom du directeur contient "${text}"`, matchingResults.byDirector));
@@ -175,6 +177,7 @@ const homePageDisplay = async () => {
     {
         $content.innerHTML = "";
         $spinner.style.display = "block";
+        $content.style.filter = "brightness(0.4)";
         var result = await mostPopular.request();
         matchingResults.mostPopular = result.data.results.bindings;
         sortMoviesByGross(matchingResults.mostPopular);
@@ -189,6 +192,7 @@ const homePageDisplay = async () => {
         $content.appendChild(await createFilmContainer(`Films les plus populaires`, matchingResults.mostPopular.slice(0, 10)));
         $content.appendChild(await createFilmContainer(`Les derniers films`, matchingResults.latest));
         $spinner.style.display = "none";
+        $content.style.filter = "brightness(1)";
         
     } catch(err)
     {
@@ -230,6 +234,7 @@ const toggleDiv = div => {
 
     const createFilmContainer = async (title, films) => {
     // on affiche les films
+    const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
 
     var $filmContent = document.createElement("div");
@@ -247,6 +252,7 @@ const toggleDiv = div => {
     $title.onclick = () => toggleDiv($filmContainer);
     
     $spinner.style.display = "block";
+    $content.style.filter = "brightness(0.4)";
     for (const film of films){
         const $film = document.createElement("div");
         $film.classList.add("film");
@@ -273,6 +279,7 @@ const toggleDiv = div => {
     };
 
     $spinner.style.display = "none";
+    $content.style.filter = "brightness(1)";
 
     $filmContent.appendChild($filmContainer);
 
@@ -329,6 +336,14 @@ async function loadFilm(wikiId) {
     // do the await things here.
     const $wikiID = wikiId;
     const $modalImage = document.getElementById("modal-img");
+
+    var imageURL = await getImageURL($wikiID);
+    if (imageURL === "")
+    {
+        imageURL = "./../img/no-poster-available.png";
+    }
+
+    $modalImage.setAttribute("src", imageURL);
 
     const byWikiID = new QueryBuilder();
 
@@ -400,14 +415,6 @@ async function loadFilm(wikiId) {
     } catch (err) {
         console.log(err)
     }
-
-    var imageURL = await getImageURL($wikiID);
-    if (imageURL === "")
-    {
-        imageURL = "./../img/no-poster-available.png";
-    }
-
-    $modalImage.setAttribute("src", imageURL);
 }
 
 function convertSecToHour(timeSec){
