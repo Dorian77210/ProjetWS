@@ -13,6 +13,24 @@ async function loadFilm() {
     const byWikiID = new QueryBuilder();
 
     // films matchant avec le texte
+    /*byWikiID.addPrefix("dbr", "<http://dbpedia.org/resource/>")
+    .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
+    .addPrefix("dbp", "<http://dbpedia.org/property/>")
+    .selectDistinct("name","abstract", "countryName", "runtime", "directorLabel")
+    .where("?film a dbo:Film;")
+    .andWhere("dbp:name ?name;")
+    .andWhere("dbo:abstract ?abstract;")
+    .andWhere("dbp:country ?country;")
+    .andWhere("dbp:runtime ?runtime;")
+    .andWhere("dbp:director ?director;")
+    .andWhere("dbo:starring ?starring;")
+    .andWhere("dbo:wikiPageID "+$wikiID)
+    .optional("?country rdfs:label ?countryLabel. FILTER(langMatches(lang(?countryLabel),'en'))", 
+                "?starring rdfs:label ?starringLabel. FILTER(langMatches(lang(?starringLabel),'en'))",
+                "?director rdfs:label ?directorLabel. FILTER(langMatches(lang(?directorLabel),'en'))")
+    .bind({condition : "?starring rdfs:label ?starringLabel.", caseTrue : "?starringLabel", caseFalse: '""', newName: "?starringName"}, 
+            {condition : "?country rdfs:label ?countryLabel.", caseTrue : "?countryLabel", caseFalse: '""', newName: "?countryName"})
+    .filter(`langMatches(lang(?abstract), "en")`);*/
     byWikiID.addPrefix("dbr", "<http://dbpedia.org/resource/>")
     .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
     .addPrefix("dbp", "<http://dbpedia.org/property/>")

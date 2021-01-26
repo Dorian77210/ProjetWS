@@ -122,6 +122,7 @@ function someListener(event){
     if (wikiId) {
         loadFilm(wikiId);
         modal.style.display = "block";
+        //window.location = './filmDetail.html?wikiId=' + wikiId;
     }
     close.onclick = function() {
         modal.style.display = "none";
@@ -335,38 +336,66 @@ async function loadFilm(wikiId) {
     byWikiID.addPrefix("dbr", "<http://dbpedia.org/resource/>")
     .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
     .addPrefix("dbp", "<http://dbpedia.org/property/>")
-    .selectDistinct("name","abstract", "countryName", "runtime", "directorLabel")
+    .selectDistinct("name", "distributor", "starringName", "musicName", "abstract", "countryName", "runtime", "producerName", "directorName")
     .where("?film a dbo:Film;")
     .andWhere("dbp:name ?name;")
-    .andWhere("dbo:abstract ?abstract;")
     .andWhere("dbp:country ?country;")
-    .andWhere("dbp:runtime ?runtime;")
     .andWhere("dbp:director ?director;")
     .andWhere("dbo:starring ?starring;")
+    .andWhere("dbp:producer ?producer;")
+    .andWhere("dbp:music ?music;")
     .andWhere("dbo:wikiPageID "+$wikiID)
+    .optional("?film dbp:runtime ?runtime.")
+    .optional(`?film dbo:abstract ?abstract. FILTER(langMatches(lang(?abstract), "en"))`)
+    .optional("?film dbp:distributor ?distributor.")
     .optional("?country rdfs:label ?countryLabel. FILTER(langMatches(lang(?countryLabel),'en'))", 
                 "?starring rdfs:label ?starringLabel. FILTER(langMatches(lang(?starringLabel),'en'))",
+                "?producer rdfs:label ?producerLabel. FILTER(langMatches(lang(?producerLabel),'en'))",
+                "?music rdfs:label ?musicLabel. FILTER(langMatches(lang(?musicLabel),'en'))",
                 "?director rdfs:label ?directorLabel. FILTER(langMatches(lang(?directorLabel),'en'))")
     .bind({condition : "?starring rdfs:label ?starringLabel.", caseTrue : "?starringLabel", caseFalse: '""', newName: "?starringName"}, 
-            {condition : "?country rdfs:label ?countryLabel.", caseTrue : "?countryLabel", caseFalse: '""', newName: "?countryName"})
-    .filter(`langMatches(lang(?abstract), "en")`);
+            {condition : "?country rdfs:label ?countryLabel.", caseTrue : "?countryLabel", caseFalse: "?country", newName: "?countryName"},
+            {condition : "?music rdfs:label ?musicLabel.", caseTrue : "?musicLabel", caseFalse: "?music", newName: "?musicName"},
+            {condition : "?producer rdfs:label ?producerLabel.", caseTrue : "?producerLabel", caseFalse: "?producer", newName: "?producerName"},
+            {condition : "?director rdfs:label ?directorLabel.", caseTrue : "?directorLabel", caseFalse: "?director", newName: "?directorName"});
 
     console.log(byWikiID.__toString());
     var filmData = null;
     try {
         var result = await byWikiID.request();
         filmData = await result.data.results.bindings;
+        console.log(filmData);
+        let starringName = "";
+        filmData.map((film, index)=>{
+            if(film.starringName != undefined){
+                starringName += film.starringName.value;
+                if(index !== filmData.length-1) {
+                    starringName += ", ";
+                }
+            }
+            else {
+                starringName = "/"
+            }
+        });
         
         // Set des données
         document.getElementById("name").innerHTML = filmData[0].name.value;
 
         document.getElementById("country").innerHTML = filmData[0].countryName.value;
 
-        document.getElementById("runtime").innerHTML = convertSecToHour(parseFloat(filmData[0].runtime.value));
+        document.getElementById("runtime").innerHTML = filmData[0].runtime == undefined ? "/" : convertSecToHour(parseFloat(filmData[0].runtime.value));
 
-        document.getElementById("director").innerHTML = filmData[0].directorLabel.value;
+        document.getElementById("director").innerHTML = filmData[0].directorName.value;
 
-        document.getElementById("abstract").innerHTML = filmData[0].abstract.value;;
+        document.getElementById("producer").innerHTML = filmData[0].producerName == undefined ? "/" : filmData[0].producerName.value;
+
+        document.getElementById("starring").innerHTML = starringName;
+
+        document.getElementById("distributor").innerHTML = filmData[0].distributor == undefined ? "/" : filmData[0].distributor.value;
+
+        document.getElementById("music").innerHTML = filmData[0].musicName == undefined ? "/" : filmData[0].musicName.value;
+
+        document.getElementById("abstract").innerHTML = filmData[0].abstract == undefined ? "/" : filmData[0].abstract.value;
         
     } catch (err) {
         console.log(err)
