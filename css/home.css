@@ -128,6 +128,9 @@ body {
     {
         padding: 10px;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
     }
 
     .filmName {
@@ -146,8 +149,10 @@ body {
     }
 
     .film-img {
+        align-self: center;
+        margin-top: auto;
+        margin-bottom: auto;
         width: 100%;
-        height: auto;
         max-width: 250px;
         max-height: 370px;
     }

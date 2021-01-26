@@ -11,6 +11,9 @@
 
     <header>
         <input id="home-page" type="image" src="./../img/home-logo.png" />
+        <select id="genres">
+            <option value="none">Aucun</option>
+        </select>
         
         <label>
             <input name="filter-by-text" id="filter-by-text" class="form-control" type="text" placeholder="Titre, acteurs, producteur..."/>
@@ -27,7 +30,7 @@
         <div id="content"></div>
     </body>
 
-    <div class="spinner-border" role="status" id="spinner">
+    <div class="spinner-border text-success" role="status" id="spinner">
         <span class="sr-only"></span>
       </div>
 
