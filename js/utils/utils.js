@@ -99,7 +99,7 @@ class QueryBuilder
 
     __toString()
     {
-        var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.optionalBody} ${this.bindBody} ${this.filterBody} } ${this.limitBody}`;
+        var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.optionalBody} ${this.bindBody} ${this.filterBody} } ${this.orderByBody} ${this.limitBody}`;
         
         return res;
     }
@@ -121,14 +121,21 @@ class QueryBuilder
 
     /**
      * Permet d'ajouter une clause BIND
-     * @param  {...any} properties Les propriétés de la forme "?prop dbo:property ?property"
+     * @param {String} condition La condition du bind
+     * @param {String} successChoice Le choix si la condition est respectée
+     * @param {String} failureChoice Le choix si la condition n'est pas respectée
      * @return L'objet courant
      */
-    bind(...properties)
+    bind(condition, successChoice, failureChoice)
     {
+<<<<<<< HEAD
         properties.forEach((property)=>{
             this.bindBody += `BIND (if(exists{${property.condition}}, ${property.caseTrue}, ${property.caseFalse}) AS ${property.newName}) \n`;
         })
+=======
+        this.bindBody += `BIND (if(exists{${condition}}, ${successChoice}, ${failureChoice})) \n`;
+        
+>>>>>>> 1f006b8b41178531af40728feaf766b95747fc63
         return this;
     }
 
