@@ -99,7 +99,7 @@ class QueryBuilder
 
     __toString()
     {
-        var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.optionalBody} ${this.bindBody} ${this.filterBody} } ${this.limitBody}`;
+        var res = `${this.prefix} SELECT ${this.selectBody} WHERE { ${this.whereBody} ${this.optionalBody} ${this.bindBody} ${this.filterBody} } ${this.orderByBody} ${this.limitBody}`;
         
         return res;
     }
