@@ -122,16 +122,15 @@ class QueryBuilder
 
     /**
      * Permet d'ajouter une clause BIND
-     * @param  {...any} properties Les propriétés de la forme "?prop dbo:property ?property"
+     * @param {String} condition La condition du bind
+     * @param {String} successChoice Le choix si la condition est respectée
+     * @param {String} failureChoice Le choix si la condition n'est pas respectée
      * @return L'objet courant
      */
-    bind(...properties)
+    bind(condition, successChoice, failureChoice)
     {
-        for (const property of properties)
-        {
-            this.bindBody += `BIND (if(exists{${condition}}, ${choice1}, ${choice2})) \n`;
-        }
-
+        this.bindBody += `BIND (if(exists{${condition}}, ${successChoice}, ${failureChoice})) \n`;
+        
         return this;
     }
 

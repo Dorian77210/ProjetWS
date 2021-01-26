@@ -1,9 +1,23 @@
+const genres = ["Romance films", "Historical films", "Horror films", "Action films", "Adventure films", "Sports films", "Documentary films", "Thriller films", "Science fiction films"]
+
 document.addEventListener("DOMContentLoaded", () => {
     const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
+    const $genreSelect = document.getElementById("genres");
+    
+    // Création des genres
+    genres.forEach(genre => {
+        const $option = document.createElement("option");
+        $option.setAttribute("value", genre);
+        $option.textContent = genre;
+
+        $genreSelect.appendChild($option);
+    });
+
+    $genreSelect.onchange = (event) => loadFilmByGenre(event);
 
     //$filmContent.onclick('window.location = ./filmDetail.html')
-    // loadFilmByGenre();
+    loadFilmByGenre();
     const homePage = document.getElementById("home-page");
 
     homePageDisplay();
@@ -184,8 +198,10 @@ const toggleDiv = div => {
     }
 }
 
-const createFilmContainer = async (title, films) => {
+    const createFilmContainer = async (title, films) => {
     // on affiche les films
+    const $spinner = document.getElementById("spinner");
+
     var $filmContent = document.createElement("div");
 
     var $title = document.createElement("h3");
@@ -201,6 +217,7 @@ const createFilmContainer = async (title, films) => {
 
     $title.onclick = () => toggleDiv($filmContainer);
     
+    $spinner.style.display = "block";
     for (const film of films){
         const $film = document.createElement("div");
         $film.classList.add("film");
@@ -225,55 +242,52 @@ const createFilmContainer = async (title, films) => {
         $filmContainer.appendChild($film);
     };
 
+    $spinner.style.display = "none";
+
     $filmContent.appendChild($filmContainer);
 
     return $filmContent;
 }
 
-async function loadFilmByGenre() {
+async function loadFilmByGenre(event)
+{
+    if (event)
+    {
+        const option = event.target;
+        const genre = option.value;
+        const $spinner = document.getElementById("spinner");
+        const $content = document.getElementById("content");
 
-    var genres = ["Romance films", "Historical films", "Horror films", "Action films", "Adventure films", "Sports films", "Documentary films", "Thriller films", "Science fiction films"]
-    var matchingResults = {};
+        if (genre === "none") return;
 
-    var filter = "";
-
-    
-    for(var i=0;i<genres.length; i++) {
-        filter = filter + `contains(lcase(str(?genreName)) ,lcase(${genre}))`;
-        if(i < genres.length - 1)
-            filter = filter + ' || ';
-    }
         const builder = new QueryBuilder();
-
-        // films par le nom des acteurs
         builder.addPrefix("dbr", "<http://dbpedia.org/resource/>")
             .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
             .addPrefix("dbp", "<http://dbpedia.org/property/>")
             .addPrefix("dct", "<http://purl.org/dc/terms/>")
             .addPrefix("skos", "<http://www.w3.org/2004/02/skos/core#>")
-            .selectDistinct("name", "wikiID", "genre")
+            .selectDistinct("name", "wikiID")
             .where("?film a dbo:Film;")
             .andWhere("dbp:name ?name;")
             .andWhere("dbo:wikiPageID ?wikiID;")
             .andWhere("dct:subject ?genreLink.")
             .andWhere("?genreLink rdfs:label ?genreName")
-            .filter(filter)
             .filter(`langMatches(lang(?name), "en")`)
-
-        console.log(builder.__toString());
+            .filter(`(contains(lcase(str(?genreName)) ,lcase("${genre}")))`)
+            .limit(50);
 
         try
         {
-            console.log("bite");
+            $spinner.style.display = "block";
             var result = await builder.request();
-            matchingResults[genre] = result.data.results.bindings;
+            const films = result.data.results.bindings;
+            $spinner.style.display = "none";
             
-            console.log("penis");
-            console.log(matchingResults);
-            
+            $content.innerHTML = "";
+            $content.appendChild(await createFilmContainer(`Films avec le genre "${genre}"`, films));
         } catch(err)
         {
             console.log(err);
         }
-    
+    }
 }
