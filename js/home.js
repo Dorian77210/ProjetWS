@@ -329,6 +329,14 @@ async function loadFilm(wikiId) {
     const $wikiID = wikiId;
     const $modalImage = document.getElementById("modal-img");
 
+    var imageURL = await getImageURL($wikiID);
+    if (imageURL === "")
+    {
+        imageURL = "./../img/no-poster-available.png";
+    }
+
+    $modalImage.setAttribute("src", imageURL);
+
     const byWikiID = new QueryBuilder();
 
     // films matchant avec le texte
@@ -371,14 +379,6 @@ async function loadFilm(wikiId) {
     } catch (err) {
         console.log(err)
     }
-
-    var imageURL = await getImageURL($wikiID);
-    if (imageURL === "")
-    {
-        imageURL = "./../img/no-poster-available.png";
-    }
-
-    $modalImage.setAttribute("src", imageURL);
 }
 
 function convertSecToHour(timeSec){
