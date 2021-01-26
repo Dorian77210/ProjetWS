@@ -116,7 +116,7 @@ function someListener(event){
     }
     console.log(wikiId); 
     if (wikiId) {
-        //window.location = './filmDetail?wikiId=' + wikiId;
+        window.location = './filmDetail.html?wikiId=' + wikiId;
     }
 }
 

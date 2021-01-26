@@ -1,9 +1,12 @@
 window.addEventListener("DOMContentLoaded", loadFilm);
 
 async function loadFilm() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
     // do the await things here.
-    const $wikiID = "18851588";
-    const wikiIDavatar = "4273140";
+    console.log(urlParams.get('wikiId'));
+    const $wikiID = urlParams.get('wikiId');
     const $imageContainer = document.getElementById("image-container");
 
     const byWikiID = new QueryBuilder();
@@ -18,13 +21,8 @@ async function loadFilm() {
     .andWhere("dbo:abstract ?abstract;")
     .andWhere("dbp:country ?country;")
     .andWhere("dbp:runtime ?runtime;")
-    //.andWhere("dbp:language ?language;")
     .andWhere("dbp:director ?director;")
     .andWhere("dbo:starring ?starring;")
-    //.addWhere("dbo:starring ?starring;")
-    //.addWhere("dbp:producer ?producer;")
-    //.addWhere("dbp:music ?music;")
-    //.addWhere("dbp:distributor ?distributor;")
     .andWhere("dbo:wikiPageID "+$wikiID)
     .optional("?country rdfs:label ?countryLabel. FILTER(langMatches(lang(?countryLabel),'en'))", 
                 "?starring rdfs:label ?starringLabel. FILTER(langMatches(lang(?starringLabel),'en'))",
