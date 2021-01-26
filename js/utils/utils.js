@@ -126,7 +126,7 @@ class QueryBuilder
      * @param {String} failureChoice Le choix si la condition n'est pas respectée
      * @return L'objet courant
      */
-    bind(condition, successChoice, failureChoice)
+    bind(...properties)
     {
         properties.forEach((property)=>{
             this.bindBody += `BIND (if(exists{${property.condition}}, ${property.caseTrue}, ${property.caseFalse}) AS ${property.newName}) \n`;
