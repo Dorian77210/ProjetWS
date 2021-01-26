@@ -5,13 +5,8 @@ async function loadFilm() {
     const urlParams = new URLSearchParams(queryString);
 
     // do the await things here.
-<<<<<<< HEAD
     const $wikiID = "18851588";//"18851588";
     const wikiIDavatar = "4273140";
-=======
-    console.log(urlParams.get('wikiId'));
-    const $wikiID = urlParams.get('wikiId');
->>>>>>> b1bd8363b17e2943e227cd72be00324421d3647b
     const $imageContainer = document.getElementById("image-container");
 
     const byWikiID = new QueryBuilder();
@@ -28,12 +23,9 @@ async function loadFilm() {
     .andWhere("dbp:runtime ?runtime;")
     .andWhere("dbp:director ?director;")
     .andWhere("dbo:starring ?starring;")
-<<<<<<< HEAD
     .andWhere("dbo:producer ?producer;")
     .andWhere("dbp:music ?music;")
     .andWhere("dbp:distributor ?distributor;")
-=======
->>>>>>> b1bd8363b17e2943e227cd72be00324421d3647b
     .andWhere("dbo:wikiPageID "+$wikiID)
     .optional("?country rdfs:label ?countryLabel. FILTER(langMatches(lang(?countryLabel),'en'))", 
                 "?starring rdfs:label ?starringLabel. FILTER(langMatches(lang(?starringLabel),'en'))",
@@ -86,15 +78,6 @@ async function loadFilm() {
     $img.setAttribute("src", imageURL);
     $img.classList.add("film-img");
     $imageContainer.append($img);
-<<<<<<< HEAD
-    
-    //document.getElementById("country").innerHTML = countryName;
-    //document.getElementById("runtime").innerHTML = filmData[0].name.value;
-    //document.getElementById("language").innerHTML = countryName;
-    //document.getElementById("director").innerHTML = filmData[0].abstract.value;
-    //document.getElementById("abstract").innerHTML = filmData[0].abstract.value;
-=======
->>>>>>> b1bd8363b17e2943e227cd72be00324421d3647b
 }
 
 function convertSecToHour(timeSec){
