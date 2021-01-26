@@ -169,7 +169,10 @@ const homePageDisplay = async () => {
         console.log(matchingResults.mostPopular);
 
         result = await latest.request();
+
+        
         matchingResults.latest = result.data.results.bindings;
+        console.log(matchingResults.latest);
         $content.appendChild(await createFilmContainer(`Films les plus populaires`, matchingResults.mostPopular));
         $content.appendChild(await createFilmContainer(`Les derniers films`, matchingResults.latest));
         $spinner.style.display = "none";
