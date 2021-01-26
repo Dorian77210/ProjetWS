@@ -1,25 +1,29 @@
 #image-container {
     width: 24%;
+    margin-right: 30px;
 }
 
 .card-title {
     color: #F0F0F0;
     display: flex;
     justify-content: center;
+    margin-bottom: 2rem;
 }
 
 .card {
-    width: 40%;
     background-color: #272727;
     padding: 1.25rem 1.25rem 1.25rem 1.25rem;
 }
 
-.card table td, th {
+.card table th {
     color: #F0F0F0;
+    width: 100px;
 }
 
 .card table tr {
+    color: #F0F0F0;
     margin-bottom: 1rem;
+    vertical-align: top;
 }
 
 .modal-content{
@@ -27,7 +31,9 @@
     flex-direction: row;
 }
 
-
+.abstract{
+    text-align: justify;
+}
 
 
 /* The Modal (background) */
@@ -47,11 +53,11 @@
 
 /* Modal Content */
 .modal-content {
-    background-color: #fefefe;
+    background-color: #272727;
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 60%;
 }
 
 /* The Close Button */
