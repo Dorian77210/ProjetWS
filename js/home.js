@@ -139,7 +139,7 @@ const homePageDisplay = async () => {
         .andWhere("dbo:gross ?gross;")
         .andWhere("dbo:wikiPageID ?wikiID")
         .filter(`langMatches(lang(?name), "en")`)
-        .limit(10);
+        .filter(`regex(lcase(str(?gross)) ,lcase(".*E(12|11|10|9).*"))`)
     
     const latest = new QueryBuilder();
     
@@ -173,7 +173,7 @@ const homePageDisplay = async () => {
         
         matchingResults.latest = result.data.results.bindings;
         console.log(matchingResults.latest);
-        $content.appendChild(await createFilmContainer(`Films les plus populaires`, matchingResults.mostPopular));
+        $content.appendChild(await createFilmContainer(`Films les plus populaires`, matchingResults.mostPopular.slice(0, 10)));
         $content.appendChild(await createFilmContainer(`Les derniers films`, matchingResults.latest));
         $spinner.style.display = "none";
         
