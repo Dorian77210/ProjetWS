@@ -122,7 +122,6 @@ function someListener(event){
     if (wikiId) {
         loadFilm(wikiId);
         modal.style.display = "block";
-        //window.location = './filmDetail.html?wikiId=' + wikiId;
     }
     close.onclick = function() {
         modal.style.display = "none";
@@ -328,7 +327,7 @@ async function loadFilm(wikiId) {
 
     // do the await things here.
     const $wikiID = wikiId;
-    const $imageContainer = document.getElementById("image-container");
+    const $modalImage = document.getElementById("modal-img");
 
     const byWikiID = new QueryBuilder();
 
@@ -373,16 +372,13 @@ async function loadFilm(wikiId) {
         console.log(err)
     }
 
-    const $img = document.createElement("img");
     var imageURL = await getImageURL($wikiID);
     if (imageURL === "")
     {
         imageURL = "./../img/no-poster-available.png";
     }
 
-    $img.setAttribute("src", imageURL);
-    $img.classList.add("film-img");
-    $imageContainer.append($img);
+    $modalImage.setAttribute("src", imageURL);
 }
 
 function convertSecToHour(timeSec){
