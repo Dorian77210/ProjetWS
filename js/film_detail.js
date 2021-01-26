@@ -3,6 +3,7 @@ window.addEventListener("DOMContentLoaded", loadFilm);
 async function loadFilm() {
     // do the await things here.
     const $wikiID = "18851588";
+    const wikiIDavatar = "4273140";
     const $imageContainer = document.getElementById("image-container");
 
     const byWikiID = new QueryBuilder();
@@ -11,30 +12,44 @@ async function loadFilm() {
     byWikiID.addPrefix("dbr", "<http://dbpedia.org/resource/>")
     .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
     .addPrefix("dbp", "<http://dbpedia.org/property/>")
-    .selectDistinct("name","abstract", "country", "runtime", "language", "directorName", "starring")
+    .selectDistinct("name","abstract", "countryName", "runtime", "directorLabel")
     .where("?film a dbo:Film;")
     .andWhere("dbp:name ?name;")
     .andWhere("dbo:abstract ?abstract;")
     .andWhere("dbp:country ?country;")
     .andWhere("dbp:runtime ?runtime;")
-    .andWhere("dbp:language ?language;")
+    //.andWhere("dbp:language ?language;")
     .andWhere("dbp:director ?director;")
-    .addWhere("dbo:starring ?starring ;")
+    .andWhere("dbo:starring ?starring;")
+    //.addWhere("dbo:starring ?starring;")
     //.addWhere("dbp:producer ?producer;")
     //.addWhere("dbp:music ?music;")
     //.addWhere("dbp:distributor ?distributor;")
     .andWhere("dbo:wikiPageID "+$wikiID)
-    .optional("?country rdfs:label ?countryLabel. FILTER(langMatches(lang(?countryLabel),'en')) ")
-    .optional("?starring rdfs:label ?starringLabel."+
-                "FILTER(langMatches(lang(?starringLabel),'en'))")
+    .optional("?country rdfs:label ?countryLabel. FILTER(langMatches(lang(?countryLabel),'en'))", 
+                "?starring rdfs:label ?starringLabel. FILTER(langMatches(lang(?starringLabel),'en'))",
+                "?director rdfs:label ?directorLabel. FILTER(langMatches(lang(?directorLabel),'en'))")
+    .bind({condition : "?starring rdfs:label ?starringLabel.", caseTrue : "?starringLabel", caseFalse: '""', newName: "?starringName"}, 
+            {condition : "?country rdfs:label ?countryLabel.", caseTrue : "?countryLabel", caseFalse: '""', newName: "?countryName"})
     .filter(`langMatches(lang(?abstract), "en")`);
 
     console.log(byWikiID.__toString());
     var filmData = null;
     try {
         var result = await byWikiID.request();
-        filmData = result.data.results.bindings;
-        console.log(filmData);
+        filmData = await result.data.results.bindings;
+        
+        // Set des données
+        document.getElementById("name").innerHTML = filmData[0].name.value;
+
+        document.getElementById("country").innerHTML = filmData[0].countryName.value;
+
+        document.getElementById("runtime").innerHTML = convertSecToHour(parseFloat(filmData[0].runtime.value));
+
+        document.getElementById("director").innerHTML = filmData[0].directorLabel.value;
+
+        document.getElementById("abstract").innerHTML = filmData[0].abstract.value;;
+        
     } catch (err) {
         console.log(err)
     }
@@ -52,29 +67,11 @@ async function loadFilm() {
 
 
     // Ajout des informations du film
-    console.log("Abstract",filmData[0].abstract.value)
+    //console.log("Abstract",filmData[0].country.value)
 
-    document.getElementById("name").innerHTML = filmData[0].name.value;
+    
 
-    var country = document.getElementById('country');
-    var text = document.createTextNode(filmData[0].country.value);
-    country.appendChild(text);
-
-    var runtime = document.getElementById('runtime');
-    var text1 = document.createTextNode(filmData[0].runtime.value);
-    runtime.appendChild(text1);
-
-    var language = document.getElementById('language');
-    var text1 = document.createTextNode(filmData[0].language.value);
-    language.appendChild(text1);
-
-    var director = document.getElementById('director');
-    var text2 = document.createTextNode(filmData[0].director.value);
-    director.appendChild(text2);
-
-    var abstract = document.getElementById('abstract');
-    var text2 = document.createTextNode(filmData[0].abstract.value);
-    abstract.appendChild(text2);
+    
 
     
     //document.getElementById("country").innerHTML = countryName;
@@ -84,6 +81,12 @@ async function loadFilm() {
     //document.getElementById("abstract").innerHTML = filmData[0].abstract.value;
 }
 
+
+function convertSecToHour(timeSec){
+    const hour = Math.floor(timeSec / 3600);
+    const min = Math.floor((timeSec % 3600) / 60);
+    return hour+':'+min;
+}
 
 
 /*function request()

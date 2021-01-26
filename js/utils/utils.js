@@ -116,7 +116,6 @@ class QueryBuilder
         {
             this.optionalBody += `OPTIONAL {${property}} \n`;
         }
-
         return this;
     }
 
@@ -127,11 +126,9 @@ class QueryBuilder
      */
     bind(...properties)
     {
-        for (const property of properties)
-        {
-            this.bindBody += `BIND (if(exists{${condition}}, ${choice1}, ${choice2})) \n`;
-        }
-
+        properties.forEach((property)=>{
+            this.bindBody += `BIND (if(exists{${property.condition}}, ${property.caseTrue}, ${property.caseFalse}) AS ${property.newName}) \n`;
+        })
         return this;
     }
 

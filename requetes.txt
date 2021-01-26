@@ -1,0 +1,30 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbp: <http://dbpedia.org/property/>
+
+SELECT DISTINCT ?countryName, ?name, ?abstract,  (group_concat(?starringName;separator=', ' ) as ?starringNames), ?directorLabel, ?runtime WHERE {
+    ?movie a dbo:Film ;
+    dbo:wikiPageID 18851588;
+    dbo:abstract ?abstract ;
+    dbp:name ?name ;
+    dbp:country ?country;
+    dbo:director ?director ;
+    dbo:starring ?starring ;
+    dbo:runtime ?runtime.
+
+    OPTIONAL{
+        ?starring rdfs:label ?starringLabel.
+        FILTER(langMatches(lang(?starringLabel),'en'))
+    }
+   OPTIONAL{
+        ?country rdfs:label ?countryLabel.
+        FILTER(langMatches(lang(?countryLabel),'en'))
+    }
+OPTIONAL{
+        ?director rdfs:label ?directorLabel.
+        FILTER(langMatches(lang(?directorLabel),'en'))
+    }
+    BIND (IF(exists{?starring rdfs:label ?starringLabel.} , ?starringLabel, "") AS ?starringName)
+    BIND (IF(exists{?country rdfs:label ?countryLabel.} , ?countryLabel, "") AS ?countryName)
+FILTER(langMatches(lang(?abstract),'en'))
+}
