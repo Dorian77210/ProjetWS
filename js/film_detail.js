@@ -16,7 +16,7 @@ async function loadFilm() {
     byWikiID.addPrefix("dbr", "<http://dbpedia.org/resource/>")
     .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
     .addPrefix("dbp", "<http://dbpedia.org/property/>")
-    .selectDistinct("name", "distributor", "starringName", "musicName", "abstract", "countryName", "runtime", "producerLabel", "directorLabel")
+    .selectDistinct("name", "distributor", "starringName", "musicName", "abstract", "countryName", "runtime (group_concat(?producerLabel;separator=', ' ) as ?producerNames)", "directorLabel")
     .where("?film a dbo:Film;")
     .andWhere("dbp:name ?name;")
     .andWhere("dbo:abstract ?abstract;")
@@ -60,7 +60,7 @@ async function loadFilm() {
 
         document.getElementById("director").innerHTML = filmData[0].directorLabel.value;
 
-        document.getElementById("producer").innerHTML = filmData[0].producerLabel.value;
+        document.getElementById("producer").innerHTML = filmData[0].producerNames.value;
 
         document.getElementById("starring").innerHTML = starringName;
 
