@@ -128,14 +128,9 @@ class QueryBuilder
      */
     bind(condition, successChoice, failureChoice)
     {
-<<<<<<< HEAD
         properties.forEach((property)=>{
             this.bindBody += `BIND (if(exists{${property.condition}}, ${property.caseTrue}, ${property.caseFalse}) AS ${property.newName}) \n`;
         })
-=======
-        this.bindBody += `BIND (if(exists{${condition}}, ${successChoice}, ${failureChoice})) \n`;
-        
->>>>>>> 1f006b8b41178531af40728feaf766b95747fc63
         return this;
     }
 
