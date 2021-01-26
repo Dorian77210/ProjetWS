@@ -5,8 +5,8 @@ async function loadFilm() {
     const urlParams = new URLSearchParams(queryString);
 
     // do the await things here.
-    console.log(urlParams.get('wikiId'));
-    const $wikiID = urlParams.get('wikiId');
+    const $wikiID = "18851588";//"18851588";
+    const wikiIDavatar = "4273140";
     const $imageContainer = document.getElementById("image-container");
 
     const byWikiID = new QueryBuilder();
@@ -15,7 +15,7 @@ async function loadFilm() {
     byWikiID.addPrefix("dbr", "<http://dbpedia.org/resource/>")
     .addPrefix("dbo", "<http://dbpedia.org/ontology/>")
     .addPrefix("dbp", "<http://dbpedia.org/property/>")
-    .selectDistinct("name","abstract", "countryName", "runtime", "directorLabel")
+    .selectDistinct("name", "distributor", "starringName", "music", "abstract", "countryName", "runtime", "producerLabel", "directorLabel")
     .where("?film a dbo:Film;")
     .andWhere("dbp:name ?name;")
     .andWhere("dbo:abstract ?abstract;")
@@ -23,9 +23,13 @@ async function loadFilm() {
     .andWhere("dbp:runtime ?runtime;")
     .andWhere("dbp:director ?director;")
     .andWhere("dbo:starring ?starring;")
+    .andWhere("dbo:producer ?producer;")
+    .andWhere("dbp:music ?music;")
+    .andWhere("dbp:distributor ?distributor;")
     .andWhere("dbo:wikiPageID "+$wikiID)
     .optional("?country rdfs:label ?countryLabel. FILTER(langMatches(lang(?countryLabel),'en'))", 
                 "?starring rdfs:label ?starringLabel. FILTER(langMatches(lang(?starringLabel),'en'))",
+                "?producer rdfs:label ?producerLabel. FILTER(langMatches(lang(?producerLabel),'en'))",
                 "?director rdfs:label ?directorLabel. FILTER(langMatches(lang(?directorLabel),'en'))")
     .bind({condition : "?starring rdfs:label ?starringLabel.", caseTrue : "?starringLabel", caseFalse: '""', newName: "?starringName"}, 
             {condition : "?country rdfs:label ?countryLabel.", caseTrue : "?countryLabel", caseFalse: '""', newName: "?countryName"})
@@ -36,7 +40,11 @@ async function loadFilm() {
     try {
         var result = await byWikiID.request();
         filmData = await result.data.results.bindings;
-        
+        console.log(filmData);
+        let starringName = "";
+        filmData.map((film)=>{
+            starringName += film.starringName.value+", ";
+        })
         // Set des données
         document.getElementById("name").innerHTML = filmData[0].name.value;
 
@@ -45,6 +53,14 @@ async function loadFilm() {
         document.getElementById("runtime").innerHTML = convertSecToHour(parseFloat(filmData[0].runtime.value));
 
         document.getElementById("director").innerHTML = filmData[0].directorLabel.value;
+
+        document.getElementById("producer").innerHTML = filmData[0].producerLabel.value;
+
+        document.getElementById("starring").innerHTML = starringName;
+
+        document.getElementById("distributor").innerHTML = filmData[0].distributor.value;
+
+        document.getElementById("music").innerHTML = filmData[0].music.value;
 
         document.getElementById("abstract").innerHTML = filmData[0].abstract.value;;
         
