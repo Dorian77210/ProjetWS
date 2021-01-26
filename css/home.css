@@ -14,41 +14,6 @@ body {
     background-color: #272727;
 }
 
-/* Header style  */
-    header{
-        height: 100px;
-        display: flex;
-        align-items: center;
-        -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-       -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-            box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-        background: url('../img/logo.png') center center no-repeat;
-        background-size: 11%;
-
-    }
-
-    header > #home-page{
-        height: 100%;
-    }
-
-    header > label {
-        margin-left: auto;
-        margin-right: 30px;
-        margin-bottom: 0;
-    }
-
-    header > button{
-        margin: 0 20px 0 0;
-    }
-
-    #filter-by-text{
-        width: 300px;
-    }
-
-    header > button{
-        height: 36px;
-    }
-
 /* Film Container Style */
 
     #content > div

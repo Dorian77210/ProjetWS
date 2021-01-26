@@ -5,25 +5,23 @@
         <script src="./../js/utils/utils.js"></script>
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="./../css/header.css">
         <link rel="stylesheet" href="./../css/home.css">
         <meta charset="utf-8">
     </head>
 
     <header>
         <input id="home-page" type="image" src="./../img/home-logo.png" />
-        <select id="genres">
-            <option value="none">Aucun</option>
-        </select>
-        
-        <label>
-            <input name="filter-by-text" id="filter-by-text" class="form-control" type="text" placeholder="Titre, acteurs, producteur..."/>
-        </label>
-    
-<!--    <label>
-            <input name="filter-by-date" class="form-control" placeholder="dd/mm/yyyy" type="date"/>
-        </label>-->
 
-        <button id="search-by-text" type="button" class="btn btn-light">Rechercher</button>
+        <div id="research_zone">
+            <select class="custom-select" id="genres">
+                <option value="none">Aucun</option>
+            </select>
+    
+            <input name="filter-by-text" id="filter-by-text" class="form-control" type="text" placeholder="Titre, acteurs, producteur..."/>
+    
+            <button id="search-by-text" type="button" class="btn btn-light">Rechercher</button>
+        </div>
     </header>
 
     <body>
