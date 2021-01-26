@@ -2,11 +2,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
 
-    //$filmContent.onclick('window.location = ./filmDetail.html')
+    homePageDisplay();
     // loadFilmByGenre();
     const homePage = document.getElementById("home-page");
-
-    homePageDisplay();
 
     homePage.addEventListener("click", homePageDisplay);
     const searchByText = document.getElementById("search-by-text");
@@ -91,6 +89,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+document.addEventListener( "click", someListener );
+
+function someListener(event){
+    var element = event.target;
+    if(element.classList.contains("film")){
+        var wikiId = element.getAttribute("wikiid");
+    }
+    if(element.parentNode.classList.contains("film")){
+        var wikiId = element.parentNode.getAttribute("wikiid");
+    }
+    console.log(wikiId); 
+    if (wikiId) {
+        //window.location = './filmDetail?wikiId=' + wikiId;
+    }
+}
+
 const homePageDisplay = async () => {
     const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
@@ -125,7 +139,6 @@ const homePageDisplay = async () => {
         .andWhere("dbo:wikiPageID ?wikiID;")
         .andWhere("<http://purl.org/dc/terms/subject> ?what")
         .filter(`regex(lcase(str(?what)) ,lcase(".*Category:[1-2][0-9][0-9][0-9]_films.*"))`)
-        .filter(`regex(lcase(str(?name)) ,lcase(".*avat.*"))`)
         .filter(`langMatches(lang(?name), "en")`)
         .orderBy(`DESC(str(?what))`)
         .limit(10);
@@ -187,7 +200,6 @@ const toggleDiv = div => {
 const createFilmContainer = async (title, films) => {
     // on affiche les films
     var $filmContent = document.createElement("div");
-
     var $title = document.createElement("h3");
 
     $title.classList.add("main-title");
@@ -204,6 +216,7 @@ const createFilmContainer = async (title, films) => {
     for (const film of films){
         const $film = document.createElement("div");
         $film.classList.add("film");
+        $film.setAttribute('wikiId', film.wikiID.value);
 
         const $img = document.createElement("img");
 
