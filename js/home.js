@@ -2,17 +2,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const $content = document.getElementById("content");
     const $spinner = document.getElementById("spinner");
 
-<<<<<<< HEAD
-    $filmContent.onclick('window.location = ./filmDetail.html')
-=======
+    //$filmContent.onclick('window.location = ./filmDetail.html')
     // loadFilmByGenre();
     const homePage = document.getElementById("home-page");
 
     homePageDisplay();
 
     homePage.addEventListener("click", homePageDisplay);
->>>>>>> d96273625518d0f223656a58802e3357ae5be54d
-
     const searchByText = document.getElementById("search-by-text");
     searchByText.addEventListener("click", async event => {
         const text = document.getElementById("filter-by-text").value.trim();
@@ -234,9 +230,6 @@ const createFilmContainer = async (title, films) => {
     return $filmContent;
 }
 
-<<<<<<< HEAD
-
-=======
 async function loadFilmByGenre() {
 
     var genres = ["Romance films", "Historical films", "Horror films", "Action films", "Adventure films", "Sports films", "Documentary films", "Thriller films", "Science fiction films"]
@@ -284,4 +277,3 @@ async function loadFilmByGenre() {
         }
     
 }
->>>>>>> d96273625518d0f223656a58802e3357ae5be54d
