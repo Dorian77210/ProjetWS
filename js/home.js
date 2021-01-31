@@ -44,8 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
             .filter(`langMatches(lang(?name), "en")`)
             .orderBy("DESC(str(?gross))");
 
-            console.log(byFilm.__toString());
-        
         const byActor = new QueryBuilder();
 
         // films par le nom des acteurs
@@ -182,13 +180,10 @@ const homePageDisplay = async () => {
         matchingResults.mostPopular = result.data.results.bindings;
         sortMoviesByGross(matchingResults.mostPopular);
 
-        console.log(matchingResults.mostPopular);
-
         result = await latest.request();
 
         
         matchingResults.latest = result.data.results.bindings;
-        console.log(matchingResults.latest);
         $content.appendChild(await createFilmContainer(`Films les plus populaires`, matchingResults.mostPopular.slice(0, 10)));
         $content.appendChild(await createFilmContainer(`Les derniers films`, matchingResults.latest));
         $spinner.style.display = "none";
@@ -374,12 +369,10 @@ async function loadFilm(wikiId) {
             {condition : "?producer rdfs:label ?producerLabel.", caseTrue : "?producerLabel", caseFalse: "?producer", newName: "?producerName"},
             {condition : "?director rdfs:label ?directorLabel.", caseTrue : "?directorLabel", caseFalse: "?director", newName: "?directorName"});
 
-    console.log(byWikiID.__toString());
     var filmData = null;
     try {
         var result = await byWikiID.request();
         filmData = await result.data.results.bindings;
-        console.log(filmData);
         let starringName = "";
         filmData.map((film, index)=>{
             if(film.starringName != undefined){
